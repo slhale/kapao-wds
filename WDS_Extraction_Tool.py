@@ -129,22 +129,22 @@ def constrain(viewStart=190000.0, viewEnd=20000.0, siderealAdjust=13000.0):
     limits = {}
     limits['separation'] = (wdsInteresting[sepFirst] > 0.5) \
                                 & (wdsInteresting[sepFirst] < 2.0)
+    
     # Currently trying to not be too restrictive on mag 
     # Would get considerably more if switched from 7.0 to 8.0 
     limits['magnitude'] = (wdsInteresting[priMag] > -10.0) \
                                 & (wdsInteresting[priMag] < 7.0)
+    
     deltaMag = calcDeltaMags()
     limits['delta magnitude'] = (deltaMag > -2.0) & (deltaMag < 2.0)
+    
     # Limit the viewing to within 19 h to 2 h 
     #  i.e. viewing from 8pm to 10pm, looking back 1h and ahead 4h
     limits['ra'] = (wdsInteresting[raCoors] > (viewStart + siderealAdjust)) \
                       | (wdsInteresting[raCoors] < (viewEnd + siderealAdjust))
-    # Limit the declination to within 4 h of overhead
-    # Using JPL's latitude, 34.2 deg = 2.28 h = 2h 16' 48'' 
-    #limits['dec'] = (wdsInteresting[decCoors] > (21648.0 - 40000.0)) \
-    #                        & (wdsInteresting[decCoors] < (21648.0 + 40000.0))
-    # Ooops, these might be in deg, min, sec format
-    # 34.2 deg = 34 deg + ... ; 3 h = 35 deg
+    
+    # Limit the declination to within 3 h = 35 deg of overhead
+    # Using JPL's latitude, 34.2 deg = 34 deg
     limits['dec'] = (wdsInteresting[decCoors] > (340000.0 - 350000.0)) \
                             & (wdsInteresting[decCoors] < (340000.0 + 350000.0))
     
@@ -155,9 +155,14 @@ def constrain(viewStart=190000.0, viewEnd=20000.0, siderealAdjust=13000.0):
     # Apply the constraints to the catalog
     wdsInteresting = wdsInteresting[np.argwhere(constraints)]
     
-    #print(limits['magnitude'])
 
-def simpleConstrain(startTime, endTime, lookBack, lookAhead, siderealAdjust):
+def inputConstrain():
+    startTime = float(raw_input("start time (earth) for viewing: "))
+    endTime = float(raw_input("end time (earth) for viewing: "))
+    lookBack = float(raw_input("how many hour anlges to look back when viewing: "))
+    lookAhead = float(raw_input("how many hour anlges to look forward when viewing: "))
+    siderealAdjust = float(raw_input("difference between sidereal and earth today?: "))
+    
     constrain(startTime-lookBack, endTime+lookAhead, siderealAdjust)
 
 def write(filename='object_list.txt'):
@@ -172,7 +177,7 @@ def plotStars():
     x = np.ravel(wdsInteresting[raCoors])
     y = np.ravel(wdsInteresting[decCoors])
 
-    plt.hist2d(x, y, bins = 5, norm=LogNorm())
+    plt.hist2d(x, y, bins = 1000, norm=LogNorm())
     plt.xlim(xmin = 360.00, xmax=0.00)
     plt.ylim(ymin = -90.0, ymax=90.0)
     plt.gca().invert_xaxis()
@@ -183,6 +188,7 @@ def plotStars():
 
 
 constrain()
+#inputConstrain()
 print(wdsInteresting)
 #write()
 plotStars()

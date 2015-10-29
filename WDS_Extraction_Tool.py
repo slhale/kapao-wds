@@ -69,7 +69,8 @@ radec = 'col21'
 """
 
 # Constriant parameters
-constaints = {}
+#constaints = {}
+limits = {}
 
 def printOriginal():
     ''' Prints the full wdsMaster catalog table to the console '''
@@ -124,9 +125,9 @@ def setConstraints():
 def constrain(viewStart=190000.0, viewEnd=20000.0, siderealAdjust=13000.0):
     ''' Limit wdsInteresting to only stars that match our criteria ''' 
     global wdsInteresting
+    global limits
     
     # Make a bunch of limits for a bunch of different things
-    limits = {}
     limits['separation'] = (wdsInteresting[sepFirst] > 0.5) \
                                 & (wdsInteresting[sepFirst] < 2.0)
     
@@ -174,43 +175,54 @@ def write(filename='object_list.txt'):
     print(wdsInteresting, file = log)
 
 def plotStars():
-    x = np.ravel(wdsInteresting[raCoors])
-    y = np.ravel(wdsInteresting[decCoors])
-
-    plt.hist2d(x, y, bins = 1000, norm=LogNorm())
-    plt.xlim(xmin = 360.00, xmax=0.00)
-    plt.ylim(ymin = -90.0, ymax=90.0)
+    global wdsMaster
+    # copy the master for usage here
+    wds = wdsMaster
+    
+    # Re-constrain wdsMaster with all but the RADEC constraints
+    constraints = limits['separation'] & limits['magnitude'] & limits['delta magnitude']
+    wds = wds[np.argwhere(constraints)]
+    
+    #simple RA and DEC plot without conversion to decimal
+    x = np.ravel(wds[raCoors])
+    y = np.ravel(wds[decCoors])
+    
+    plt.hist2d(x, y, bins = 100, norm=LogNorm())
+    plt.xlim(xmin = 240000.00, xmax=0.00)
+    plt.ylim(ymin = -900000.0, ymax=900000.0)
     plt.gca().invert_xaxis()
-    plt.title('WDS Histogram of RA vs. DEC in degrees')
-    plt.xlabel('RA')
-    plt.ylabel('DEC')
+    plt.title('WDS Histogram of RA vs. DEC (100 bins)')
+    plt.xlabel('RA hhmmss')
+    plt.ylabel('DEC ddmmss')
     plt.savefig('RA_DEC_histogram_extracted.png', format='png',dpi=1000)
 
 def plotMagSep():
-    global wdsInteresting
+    global wdsMaster
+    
+    # copy the master for usage here
+    wds = wdsMaster
+    
+    # Re-constrain wdsMaster with all but the RADEC constraints
+    constraints = limits['separation'] & limits['magnitude'] & limits['delta magnitude']
+    wds = wds[np.argwhere(constraints)]
     
     #plot of magnitude vs separation for KAPAO constrains
-    
-    #x = np.ravel(Sep_first_KAPAO)
-    #y = np.ravel(Pri_mag_KAPAO)
-    x = np.ravel(wdsInteresting[sepFirst])
-    y = np.ravel(wdsInteresting[priMag])
+    x = np.ravel(wds[sepFirst])
+    y = np.ravel(wds[priMag])
 
     plt.hist2d(x, y, bins = 100, norm=LogNorm())
     plt.xlim(xmin = 2.00, xmax=0.00)
     plt.ylim(ymin = 2.00, ymax=9.00)
     plt.gca().invert_xaxis()
-    plt.title('KAPAO-limited Separation vs. Magnitude')
+    plt.title('KAPAO-limited Separation vs. Magnitude (100 bins)')
     plt.xlabel('Separation')
     plt.ylabel('Magnitude')
     plt.savefig('Sep_v_Mag_extracted.png', format='png',dpi=1000)
-
-
 
 constrain()
 #inputConstrain()
 print(wdsInteresting)
 #write()
-#plotStars()
+plotStars()
 plotMagSep()
 

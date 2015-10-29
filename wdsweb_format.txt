@@ -1,0 +1,203 @@
+                   WDS SUMMARY CATALOG KEY
+ 
+ 
+    COLUMN     Format                     DATA
+    --------   ------         ----------------------------
+    1  -  10   A10             0  WDS designation (based on 2000 coordinates)
+    11 -  17   A7              1  Discoverer & Number
+    18 -  22   A5              2  Components
+    24 -  27   I4              3  Date (first)
+    29 -  32   I4              4  Date (last)
+    34 -  37   I4              5  Number of Observations (up to 9999)
+    39 -  41   I3              6  Position Angle (first measure)
+    43 -  45   I3              7  Position Angle (last measure)
+    47 -  51   F5.1            8  Separation (first measure)
+    53 -  57   F5.1            9  Separation (last measure)
+    59 -  63   F5.2            10 Magnitude of First Component
+    65 -  69   F5.2            11 Magnitude of Second Component
+    71 -  79   A9              12 Spectral Type (Primary/Secondary)
+    81 -  84   I4              13 Primary Proper Motion (RA)
+    85 -  88   I4              14 Primary Proper Motion (Dec)
+    90 -  93   I4              15 Secondary Proper Motion (RA)
+    94 -  97   I4              16 Secondary Proper Motion (Dec)
+    99 - 106   A8              17 Durchmusterung Number
+   108 - 111   A4              18 Notes
+   113 - 130   A18             19 2000 arcsecond coordinates
+                                                                                
+                          Description of Data in the WDS                        
+                                                                                
+Columns   1- 10:    The WDS designation is based on the epoch-2000
+                    coordinates of the primary (hours, minutes, and tenths
+                    of minutes of Right Ascension, followed by degrees and
+                    minutes of Declination, with + and - indicating north
+                    and south declinations). Where possible, these are
+                    based on Tycho-2 or UCAC4 data, with proper motion
+                    incorporated. Note that pairs discovered prior to the
+                    early 1960s were originally given IDS designations
+                    based on epoch-1900 coordinates. As these coarse
+                    coordinates were precessed to epoch-2000 without
+                    proper motion correction, they may differ from precise
+                    J2000 coordinates by up to several arcminutes.
+                                                                                
+Columns  11- 17:    The discoverer, identified by their one-to-three
+                    letter code, and discoverer's number (either assigned
+                    by the discoverer or later by the WDS cataloguer.) The
+                    reference list should be consulted first to identify
+                    individuals. 
+                                                                                
+Columns  18- 22:    Components, when the object has more than two. The
+                    Lick IDS scheme has been discontinued, and components
+                    are now referred to by the traditionally employed
+                    lower-case letters. The rather awkward upper-case
+                    designations, e.g. ABXC, have been changed to the form
+                    AB,C. We have noted some confusion on the part of
+                    observers and students alike, as to how to designate
+                    components in multiple systems. Traditionally, these
+                    have been designated in order of separation, thus AB,
+                    AC,...., or in the cases where close pairs are
+                    observed blended, AB,C or AB,D .... In some instances,
+                    differing resolution limits produce situations where
+                    observations are intermixed, thus AC, AB,C, and so
+                    forth (in all too many cases, carelessness on the part
+                    of the observer does not permit us to determine with
+                    certainty how the observation is to be interpreted).
+                    There are also many instances where later observations
+                    have resolved a component into a close double or
+                    multiple; for example, two stars comprising the A
+                    component are designated Aa and Ab. Similarly, an Aa
+                    component might be resolved (usually through
+                    long-baseline interferometry) into even closer Aa1 and
+                    Aa2 components. In some very early catalogs,
+                    additional very wide discoveries were denoted by
+                    lower-case letters; these have been converted to
+                    upper-case letters later in the alphabet.
+         
+Columns  24- 27:    The dates of the first and last observations of an 
+         29- 32:    object (of satisfactory accuracy), up to the present
+                    date.
+                                                                               
+Columns  34- 37:    The number of measures of the object. 
+                                                                                
+Columns  39- 41:    Position angles in degrees for the dates listed in 
+         43- 45:    columns 24-32. Crude positions (e.g., NP) of the past
+                    have been changed to their degree equivalent with an
+                    accompanying note in the data line of the measurement
+                    database. Position angles are unprecessed in this
+                    catalog (i.e., they are for the mean date of
+                    observation).                       
+                                                                                
+Columns  47- 51:    The separations in seconds of arc, and tenths, for the
+         53- 57:    dates listed in columns 24-32. 
+                                                                                
+Columns  59- 63:    Magnitudes of the two components. See the Introduction
+         65- 69:    for discussion.
+                                                                                
+Columns  71- 79:    Spectral type of A, or of two components, if space 
+                    permits. See the Introduction for discussion.
+                                                                               
+Columns  81- 84:    The components of the proper motion in seconds of arc
+         85- 88:    per 1000 years (i.e, mas per year), in right ascension
+                    reduced to great circle, and in declination.
+                    Specifically, this catalog lists 15mu(alpha)cos(delta),
+                    where mu(alpha) is in seconds of time, and mu(delta)
+                    is in seconds of arc. Both quantities are reduced to a
+                    time unit of 1000 years. The exceptions are those 
+                    objects coded P for which an explanation is given
+                    under the description for Columns 108 to 111. + and -
+                    indicate eastward and westward motions in Right
+                    Ascension, and + and - those north and south in
+                    Declination. Where possible, this comes from Tycho-2
+                    for brighter stars, UCAC4 for fainter ones.
+
+Columns  90- 93:    Proper motion of the secondary, when known.
+         94- 97:    
+                                                                               
+Columns  99-106:    Durchmusterung number of the object in the system used
+                    by the Henry Draper Catalogue: Bonn from +89 degrees
+                    to -22 degrees inclusive, Cordoba from -23 degrees to
+                    -51 degrees inclusive, Cape Photographic from -52
+                    degrees to -89 degrees inclusive. When a star is not
+                    contained in the Durchmusterung proper to its
+                    declination zone, but is contained in another
+                    Durchmusterung, this is so indicated in the Notes.
+                    Other components having different Durchmusterung
+                    numbers are also indicated in the Notes. Note that the
+                    DM designation for Aa,Ab and other subcomponents of A
+                    as well as AB and simple binaries (i.e., no component
+                    designation) we give the appropriate cross-reference
+                    for the A component. For other pairs in multiple
+                    systems, AC, AD, AB,C, or even BC, we give the 
+                    cross-reference of the secondary of that pairing
+                    (i.e., for the above, C, D, C and C).
+
+Columns 108-111:    The following codes are contained in these columns:
+
+                        B: Summary line gives blue (Johnson U or B, blue
+                           photographic, etc.) magnitudes
+                        C: Orbit and Linear solution. A published orbit
+                           exists and this system has a Linear Solution as
+                           well. A "C" code, then, indicates both an "O"
+                           and an "L" code.
+                        D: Has measure in Delta-M catalog
+                        I: Identification uncertain. Match of object at
+                           precise position with WDS pair may or may not
+                           be correct. Currently under examination.
+                        K: Summary line gives K-band or other infrared (>1
+                           micron) magnitudes         
+                        L: Linear solution. Linear elements for this pair
+                           have been determined  and in Linear Elements
+                           Catalog.
+                        N: Notes found in wdsnot.memo of WDS
+                        O: Orbit has entry in Orbit Catalog
+                        P: 100-year proper motion in right ascension and
+                           declination
+                        R: Summary line gives red (Johnson R or I, red
+                           photographic, etc.) magnitudes                
+                        S: Statistically different parallax and proper
+                           motion indicates that this pair is non-physical.
+                        T: Statistically the same parallax within the
+                           errors and similar proper motion or other
+                           technique indicates that this pair is physical.
+                        U: Proper motion or other technique indicates that
+                           this pair is non-physical.
+                        V: Proper motion or other technique indicates that
+                           this pair is physical.
+                        X: A "Dubious Double" (or "Bogus Binary"). This
+                           pair may represent a positional typo in the
+                           original publication (so we're looking in the
+                           wrong location), an optical double disappearing
+                           due to radically different proper motions, a
+                           plate flaw, or simply a pair not at a magnitude,
+                           separation, etc., sufficiently similar to those
+                           noted when the first measure was added (making
+                           it too faint, too close, etc.). We would
+                           certainly like to know about any circumstances
+                           where you have found or have ascertained the
+                           mystery behind these pairs.
+                        Y: Statistically different parallax for the
+                           components indicates they are non-physical.
+                        Z: Statistically the same parallax within the
+                           errors would indicate the components are
+                           physical.
+
+                    At present, column 108 is reserved for N, column 109
+                    for O, L, C, S, T, U, V, Y, Z (an indication of the
+                    optical/physical nature of the pair or X and column
+                    110 for D. The other codes can occur in any column.
+                                                                              
+Columns 113-130:    The hours, minutes, seconds and tenths of seconds
+                    (when known) of Right Ascension for J2000, followed by
+                    the degrees, minutes, and seconds of Declination for
+                    2000, with + and - indicating north and south
+                    declinations. The positions given represent our best
+                    estimates of these values. Where possible, these are
+                    based on Hipparcos or Tycho-2 data (UCAC4 for fainter
+                    stars), with proper motion incorporated. While the
+                    arcminute coordinate (columns 1-10) refer to the
+                    primary of a multiple system, the arcsecond coordinate
+                    (columns 113-130) refer to the primary of the
+                    subsystem. For example, while the BC pair of an A,BC
+                    multiple will have the same 10 digit WDS coordinate,
+                    the arcsecond-precise coordinates of the BC pair will
+                    be at the "B" position.
+

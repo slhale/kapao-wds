@@ -33,7 +33,7 @@ wdsMaster = astropy.io.ascii.read('WDS_CSV_cat_1-24_FIN2.txt', #'WDS_CSV_cat.txt
 # Create the sub-catalog we want (to be narrowed down by constrain function)
 wdsInteresting = wdsMaster
 # Create sub-sub catalog which has the interesting stars that we can view
-wdsHere = wdsInteresting
+wdsInterestingHere = wdsInteresting
 
 # Associate each row with its type
 # e.g. Using wdsMaster[numObjs] is equiv to wdsMaster['col2']
@@ -127,7 +127,7 @@ def setConstraints():
 def constrain(viewStart=190000.0, viewEnd=20000.0, siderealAdjust=13000.0):
     ''' Limit wdsInteresting to only stars that match our criteria ''' 
     global wdsInteresting
-    global wdsHere
+    global wdsInterestingHere
     global limits
     
     # Make a bunch of limits for a bunch of different things
@@ -159,7 +159,7 @@ def constrain(viewStart=190000.0, viewEnd=20000.0, siderealAdjust=13000.0):
     
     # Apply the constraints to the catalog
     wdsInteresting = wdsInteresting[np.argwhere(generalConstraints)]
-    wdsHere = wdsHere[np.argwhere(hereConstraints)]
+    wdsInterestingHere = wdsInterestingHere[np.argwhere(hereConstraints)]
 
 def inputConstrain():
     startTime = float(raw_input("start time (earth) for viewing: "))
@@ -209,7 +209,7 @@ def plotMagSep(catalog):
 constrain()
 #inputConstrain()
 #print(wdsInteresting)
-print(wdsHere)
+print(wdsInterestingHere)
 #write()
 plotStars(wdsInteresting)
 plotMagSep(wdsInteresting)

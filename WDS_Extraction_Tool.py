@@ -32,6 +32,8 @@ wdsMaster = astropy.io.ascii.read('WDS_CSV_cat_1-24_FIN2.txt', #'WDS_CSV_cat.txt
                 fill_values=[('.', '-999'), ('', '-999')])
 # Create the sub-catalog we want (to be narrowed down by constrain function)
 wdsInteresting = wdsMaster
+# Create sub-sub catalog which has the interesting stars that we can view
+wdsHere = wdsInteresting
 
 # Associate each row with its type
 # e.g. Using wdsMaster[numObjs] is equiv to wdsMaster['col2']
@@ -125,6 +127,7 @@ def setConstraints():
 def constrain(viewStart=190000.0, viewEnd=20000.0, siderealAdjust=13000.0):
     ''' Limit wdsInteresting to only stars that match our criteria ''' 
     global wdsInteresting
+    global wdsHere
     global limits
     
     # Make a bunch of limits for a bunch of different things
@@ -150,12 +153,13 @@ def constrain(viewStart=190000.0, viewEnd=20000.0, siderealAdjust=13000.0):
                             & (wdsInteresting[decCoors] < (340000.0 + 350000.0))
     
     # Combine all the limits together to get the full constraints
-    constraints = limits['separation'] & limits['magnitude'] \
+    generalConstraints = limits['separation'] & limits['magnitude'] & limits['delta magnitude']
+    hereConstraints = limits['separation'] & limits['magnitude'] \
                     & limits['delta magnitude'] & limits['dec'] & limits['ra']
     
     # Apply the constraints to the catalog
-    wdsInteresting = wdsInteresting[np.argwhere(constraints)]
-    
+    wdsInteresting = wdsInteresting[np.argwhere(generalConstraints)]
+    wdsHere = wdsHere[np.argwhere(hereConstraints)]
 
 def inputConstrain():
     startTime = float(raw_input("start time (earth) for viewing: "))
@@ -174,18 +178,10 @@ def write(filename='object_list.txt'):
     log = open(filename, "w")
     print(wdsInteresting, file = log)
 
-def plotStars():
-    global wdsMaster
-    # copy the master for usage here
-    wds = wdsMaster
-    
-    # Re-constrain wdsMaster with all but the RADEC constraints
-    constraints = limits['separation'] & limits['magnitude'] & limits['delta magnitude']
-    wds = wds[np.argwhere(constraints)]
-    
+def plotStars(catalog):
     #simple RA and DEC plot without conversion to decimal
-    x = np.ravel(wds[raCoors])
-    y = np.ravel(wds[decCoors])
+    x = np.ravel(catalog[raCoors])
+    y = np.ravel(catalog[decCoors])
     
     plt.hist2d(x, y, bins = 100, norm=LogNorm())
     plt.xlim(xmin = 240000.00, xmax=0.00)
@@ -196,19 +192,10 @@ def plotStars():
     plt.ylabel('DEC ddmmss')
     plt.savefig('RA_DEC_histogram_extracted.png', format='png',dpi=1000)
 
-def plotMagSep():
-    global wdsMaster
-    
-    # copy the master for usage here
-    wds = wdsMaster
-    
-    # Re-constrain wdsMaster with all but the RADEC constraints
-    constraints = limits['separation'] & limits['magnitude'] & limits['delta magnitude']
-    wds = wds[np.argwhere(constraints)]
-    
+def plotMagSep(catalog):
     #plot of magnitude vs separation for KAPAO constrains
-    x = np.ravel(wds[sepFirst])
-    y = np.ravel(wds[priMag])
+    x = np.ravel(catalog[sepFirst])
+    y = np.ravel(catalog[priMag])
 
     plt.hist2d(x, y, bins = 100, norm=LogNorm())
     plt.xlim(xmin = 2.00, xmax=0.00)
@@ -221,8 +208,9 @@ def plotMagSep():
 
 constrain()
 #inputConstrain()
-print(wdsInteresting)
+#print(wdsInteresting)
+print(wdsHere)
 #write()
-plotStars()
-plotMagSep()
+plotStars(wdsInteresting)
+plotMagSep(wdsInteresting)
 

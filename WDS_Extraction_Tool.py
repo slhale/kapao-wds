@@ -186,11 +186,31 @@ def plotStars():
     plt.ylabel('DEC')
     plt.savefig('RA_DEC_histogram_extracted.png', format='png',dpi=1000)
 
+def plotMagSep():
+    global wdsInteresting
+    
+    #plot of magnitude vs separation for KAPAO constrains
+    
+    #x = np.ravel(Sep_first_KAPAO)
+    #y = np.ravel(Pri_mag_KAPAO)
+    x = np.ravel(wdsInteresting[sepFirst])
+    y = np.ravel(wdsInteresting[priMag])
+
+    plt.hist2d(x, y, bins = 100, norm=LogNorm())
+    plt.xlim(xmin = 2.00, xmax=0.00)
+    plt.ylim(ymin = 2.00, ymax=9.00)
+    plt.gca().invert_xaxis()
+    plt.title('KAPAO-limited Separation vs. Magnitude')
+    plt.xlabel('Separation')
+    plt.ylabel('Magnitude')
+    plt.savefig('Sep_v_Mag_extracted.png', format='png',dpi=1000)
+
+
 
 constrain()
 #inputConstrain()
 print(wdsInteresting)
 #write()
-plotStars()
-
+#plotStars()
+plotMagSep()
 

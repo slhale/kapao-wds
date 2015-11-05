@@ -139,6 +139,8 @@ def constrain(viewStart=190000.0, viewEnd=20000.0, siderealAdjust=13000.0):
     limits['magnitude'] = (wdsInteresting[priMag] > -10.0) \
                                 & (wdsInteresting[priMag] < 7.0)
     
+    ## TODO Add color of stars as a thing
+    
     deltaMag = calcDeltaMags()
     limits['delta magnitude'] = (deltaMag > -2.0) & (deltaMag < 2.0)
     
@@ -160,6 +162,17 @@ def constrain(viewStart=190000.0, viewEnd=20000.0, siderealAdjust=13000.0):
     # Apply the constraints to the catalog
     wdsInteresting = wdsInteresting[np.argwhere(generalConstraints)]
     wdsInterestingHere = wdsInterestingHere[np.argwhere(hereConstraints)]
+    
+    # Testing adding rows 
+    #wdsInterestingHere.add_row(['testing', 'TESTING', 'Test'])
+    print(len(wdsInterestingHere))
+    print(len(wdsInterestingHere[0]))
+    newRow = []
+    for i in range(0, len(wdsInterestingHere[0])):
+        newRow.append(i)
+    print(newRow)
+    wdsInterestingHere.insert_row(1,vals=newRow)
+    wdsInterestingHere.add_row(newRow)
 
 def inputConstrain():
     startTime = float(raw_input("start time (earth) for viewing: "))
@@ -178,10 +191,17 @@ def write(filename='object_list.txt'):
     log = open(filename, "w")
     print(wdsInteresting, file = log)
 
+## TODO  Document these functions
+## TODO Add key with constraints and total number 
+## TODO Color the plots in accordances with the constraints 
 def plotStars(catalog):
     #simple RA and DEC plot without conversion to decimal
     x = np.ravel(catalog[raCoors])
     y = np.ravel(catalog[decCoors])
+    
+    ### TODO 'color' code this plot with magnitude as size of point
+    ### TODO color code this plot with separation as color  
+    ### TODO 'color' code this plot with delta mag as shape   
     
     plt.hist2d(x, y, bins = 100, norm=LogNorm())
     plt.xlim(xmin = 240000.00, xmax=0.00)
@@ -205,6 +225,8 @@ def plotMagSep(catalog):
     plt.xlabel('Separation')
     plt.ylabel('Magnitude')
     plt.savefig('Sep_v_Mag_extracted.png', format='png',dpi=1000)
+
+
 
 constrain()
 #inputConstrain()

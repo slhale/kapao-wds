@@ -6,12 +6,22 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 
+import WDS_Extraction_Tool as wdsExtractor
+
 class HelloWorld:
 
     # This is a callback function. The data arguments are ignored
     # in this example. More on callbacks below.
     def hello(self, widget, data=None):
         print "Hello World"
+        
+    # This is a callback function. 
+    # This constrains the WDS table.
+    # This ignores inputs and directly accesses the input Entry fields. 
+    def constrain(self, widget, data=None):
+        #print self.startHAInput.get_text()
+        startHAInput = float(self.startHAInput.get_text())
+        stopHAInput = float(self.stopHAInput.get_text())
 
     def delete_event(self, widget, event, data=None):
         # If you return FALSE in the "delete_event" signal handler,
@@ -130,8 +140,11 @@ class HelloWorld:
         
         
         # Make input field for the user 
+        # They start out with default values 
         self.startHAInput = gtk.Entry()
+        self.startHAInput.set_text("180000.0")
         self.stopHAInput = gtk.Entry()
+        self.stopHAInput.set_text("240000.0")
         
         # Attach them to the 3rd row of the table
         self.inputsTable.attach(self.startHAInput, 0, 1, 2, 3)#left_attach, right_attach, top_attach, bottom_attach)
@@ -162,6 +175,22 @@ class HelloWorld:
         self.magnitudeLabel.show()
         self.inputsTable.attach(self.deltaMagLabel, 2, 3, 4, 5)#left_attach, right_attach, top_attach, bottom_attach)
         self.deltaMagLabel.show()
+        
+        # TODO finish GUIing the inpts
+        
+        
+        ######## DO IT BUTTON
+        
+        # Make a button to apply the wds table contraints 
+        self.constrainButton = gtk.Button("Constrain")
+        
+        # Attach it to the 7th row of the table
+        self.inputsTable.attach(self.constrainButton, 0, 1, 6, 7)#left_attach, right_attach, top_attach, bottom_attach)
+        self.constrainButton.show()
+        
+        # When the button receives the "clicked" signal, it will call the
+        # function constrain() passing it None as its argument.
+        self.constrainButton.connect("clicked", self.constrain, None)
         
         
         ############# TEXTVIEW

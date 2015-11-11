@@ -226,13 +226,19 @@ def plotMagSep(catalog):
     plt.ylabel('Magnitude')
     plt.savefig('Sep_v_Mag_extracted.png', format='png',dpi=1000)
 
+def getWdsInterestingHere():
+    global wdsInterestingHere
+    return wdsInterestingHere
 
+def getWdsInteresting():
+    global wdsInteresting
+    return wdsInteresting
 
 constrain()
 #inputConstrain()
 #print(wdsInteresting)
-print(wdsInterestingHere)
+#print(wdsInterestingHere)
 #write()
-plotStars(wdsInteresting)
-plotMagSep(wdsInteresting)
+#plotStars(wdsInteresting)
+#plotMagSep(wdsInteresting)
 

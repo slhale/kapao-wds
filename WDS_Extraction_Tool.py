@@ -71,12 +71,21 @@ radec = 'col21'
 """
 
 # Constriant parameters
-#constaints = {}
+# constraints is the actual numbers, while limits has the boolean statements
+constaints = {}
 limits = {}
 
-def printOriginal():
-    ''' Prints the full wdsMaster catalog table to the console '''
-    print(wdsMaster)
+def getWdsInterestingHere():
+    global wdsInterestingHere
+    return wdsInterestingHere
+
+def getWdsInteresting():
+    global wdsInteresting
+    return wdsInteresting
+
+def getWdsMaster():
+    global wdsMaster
+    return wdsMaster
 
 def calcDeltaMags():
     ''' Creates an array with the delta magnitudes of WDS objects '''
@@ -91,6 +100,7 @@ def calcDeltaMags():
     
     return Delta_mag
 
+# TODO This doesn't work yet
 def calcSiderealTime(longitude=-117, time=Time.now()):
     ''' Calculate the sidereal time for a specific time and place. 
         By default calculates for the current time at longitude -117. ''' 
@@ -98,66 +108,85 @@ def calcSiderealTime(longitude=-117, time=Time.now()):
     return time.sidereal_time('apparent', longitude=-117)
     
 
-def calcRaDecRestrictions():
-    ''' Calculate what the range of RA and DEC that we want. '''
-    
-    # The hour angle range that we want is 19 h to 2 h 
-    # The date we are assuming is October 15, 2015 
-    # The location we are using is approximately that of JPL
-    
-def setConstraints():
+# Sets the upper and lower bounds for constraining stars of the wds table
+# does not actually apply the constraints
+# takes tuples of upper and lower floats, in the format (upper, lower)
+def setStarConstraints(separation=(2.0, 0.5), magnitude=(7.0, -10.0), deltaMag=(2.0, -2.0)):
     ''' Set the upper and lower bounds for the constraints.
         (Does not constrain the wds list.) '''
     global constaints
     
-    constaints['separation'] = {};
-    constaints['separation']['upper'] = 2.0
-    constaints['separation']['lower'] = 0.5
+    constaints['separation'] = separation
+    constaints['magnitude'] = magnitude
+    constaints['delta magnitude'] = deltaMag
+
+# Sets the upper and lower bounds for constraining stars of the wds table
+# does not actually apply the constraints
+# takes floats in format hhmmss for hour angle
+# TODO replace sidereal adjustment parameter with an actual calculation for it 
+def setTimeConstraints(startHA=190000.0, stopHA=240000.0, siderealAdjust=13000.0):
+    ''' Set the upper and lower bounds for the constraints.
+        (Does not constrain the wds list.) '''
+    global constaints
     
-    constaints['magnitude'] = {};
-    constaints['magnitude']['upper'] = 7.0
-    constaints['magnitude']['lower'] = -10.0
+    startRA = startHA + siderealAdjust
+    stopRA = stopHA + siderealAdjust
     
-    constaints['delta magnitude'] = {};
-    constaints['delta magnitude']['upper'] = 2.0
-    constaints['delta magnitude']['lower'] = -2.0
+    # Account for the 24 hour clock, and roll over if we pass midnight on either
+    if startRA > 240000.0:
+        startRA = startRA - 240000.0
+    if stopRA > 240000.0:
+        stopRA = stopRA - 240000.0
+    
+    # the stop time is the "upper bound", so it's first in the tuple
+    constaints['ra'] = (stopRA, startRA)
+    
 
 # The default inputs are currently specific to the 2015 Oct 15 observation date 
 # On this date the sidereal time will be about 1.6 h ahead of earth time
-def constrain(viewStart=190000.0, viewEnd=20000.0, siderealAdjust=13000.0):
+# Uses the global constrain var to determine how the wds table is constrained
+def constrain():#viewStart=190000.0, viewEnd=20000.0, siderealAdjust=13000.0):
     ''' Limit wdsInteresting to only stars that match our criteria ''' 
     global wdsInteresting
     global wdsInterestingHere
+    global constaints
     global limits
     
     # Make a bunch of limits for a bunch of different things
-    limits['separation'] = (wdsInteresting[sepFirst] > 0.5) \
-                                & (wdsInteresting[sepFirst] < 2.0)
+    #limits['separation'] = (wdsInteresting[sepFirst] > 0.5) & (wdsInteresting[sepFirst] < 2.0)
+    limits['separation'] = (constaints['separation'][0] > wdsInteresting[sepFirst]) & (wdsInteresting[sepFirst] > constaints['separation'][1])
     
     # Currently trying to not be too restrictive on mag 
     # Would get considerably more if switched from 7.0 to 8.0 
-    limits['magnitude'] = (wdsInteresting[priMag] > -10.0) \
-                                & (wdsInteresting[priMag] < 7.0)
+    #limits['magnitude'] = (wdsInteresting[priMag] > -10.0) & (wdsInteresting[priMag] < 7.0)
+    limits['magnitude'] = (constaints['magnitude'][0] > wdsInteresting[priMag]) & (wdsInteresting[priMag] > constaints['magnitude'][1])
     
     ## TODO Add color of stars as a thing
-    
+    6
     deltaMag = calcDeltaMags()
-    limits['delta magnitude'] = (deltaMag > -2.0) & (deltaMag < 2.0)
+    #limits['delta magnitude'] = (deltaMag > -2.0) & (deltaMag < 2.0)
+    limits['delta magnitude'] = (constaints['delta magnitude'][0] > deltaMag) & (deltaMag > constaints['delta magnitude'][1])
     
     # Limit the viewing to within 19 h to 2 h 
     #  i.e. viewing from 8pm to 10pm, looking back 1h and ahead 4h
-    limits['ra'] = (wdsInteresting[raCoors] > (viewStart + siderealAdjust)) \
-                      | (wdsInteresting[raCoors] < (viewEnd + siderealAdjust))
+    #limits['ra'] = (wdsInteresting[raCoors] > (viewStart + siderealAdjust)) | (wdsInteresting[raCoors] < (viewEnd + siderealAdjust))
+    
+    # Limit the viewing to times/HA/RA that are acceptable 
+    # If the stop time is less than the start, we have crossed over the 
+    # midnight mark and need to do weird calculations
+    if constaints['ra'][0] < constaints['ra'][1]:
+        limits['ra'] = (constaints['ra'][0] > wdsInteresting[raCoors]) | (wdsInteresting[raCoors] > constaints['ra'][1])
+    else:
+        limits['ra'] = (constaints['ra'][0] > wdsInteresting[raCoors]) & (wdsInteresting[raCoors] > constaints['ra'][1])
+    
     
     # Limit the declination to within 3 h = 35 deg of overhead
     # Using JPL's latitude, 34.2 deg = 34 deg
-    limits['dec'] = (wdsInteresting[decCoors] > (340000.0 - 350000.0)) \
-                            & (wdsInteresting[decCoors] < (340000.0 + 350000.0))
+    limits['dec'] = (wdsInteresting[decCoors] > (340000.0 - 350000.0)) & (wdsInteresting[decCoors] < (340000.0 + 350000.0))
     
     # Combine all the limits together to get the full constraints
     generalConstraints = limits['separation'] & limits['magnitude'] & limits['delta magnitude']
-    hereConstraints = limits['separation'] & limits['magnitude'] \
-                    & limits['delta magnitude'] & limits['dec'] & limits['ra']
+    hereConstraints = limits['separation'] & limits['magnitude'] & limits['delta magnitude'] & limits['dec'] & limits['ra']
     
     # Apply the constraints to the catalog
     wdsInteresting = wdsInteresting[np.argwhere(generalConstraints)]
@@ -165,23 +194,23 @@ def constrain(viewStart=190000.0, viewEnd=20000.0, siderealAdjust=13000.0):
     
     # Testing adding rows 
     #wdsInterestingHere.add_row(['testing', 'TESTING', 'Test'])
-    print(len(wdsInterestingHere))
-    print(len(wdsInterestingHere[0]))
-    newRow = []
-    for i in range(0, len(wdsInterestingHere[0])):
-        newRow.append(i)
-    print(newRow)
-    wdsInterestingHere.insert_row(1,vals=newRow)
-    wdsInterestingHere.add_row(newRow)
+#    print(len(wdsInterestingHere))
+#    print(len(wdsInterestingHere[0]))
+#    newRow = []
+#    for i in range(0, len(wdsInterestingHere[0])):
+#        newRow.append(i)
+#    print(newRow)
+#    wdsInterestingHere.insert_row(1,vals=newRow)
+#    wdsInterestingHere.add_row(newRow)
 
-def inputConstrain():
-    startTime = float(raw_input("start time (earth) for viewing: "))
-    endTime = float(raw_input("end time (earth) for viewing: "))
-    lookBack = float(raw_input("how many hour anlges to look back when viewing: "))
-    lookAhead = float(raw_input("how many hour anlges to look forward when viewing: "))
-    siderealAdjust = float(raw_input("difference between sidereal and earth today?: "))
-    
-    constrain(startTime-lookBack, endTime+lookAhead, siderealAdjust)
+#def inputConstrain():
+#    startTime = float(raw_input("start time (earth) for viewing: "))
+#    endTime = float(raw_input("end time (earth) for viewing: "))
+#    lookBack = float(raw_input("how many hour anlges to look back when viewing: "))
+#    lookAhead = float(raw_input("how many hour anlges to look forward when viewing: "))
+#    siderealAdjust = float(raw_input("difference between sidereal and earth today?: "))
+#    
+#    constrain(startTime-lookBack, endTime+lookAhead, siderealAdjust)
 
 def write(filename='object_list.txt'):
     ''' Writes the contents of wdsInteresting to a file. 
@@ -226,18 +255,13 @@ def plotMagSep(catalog):
     plt.ylabel('Magnitude')
     plt.savefig('Sep_v_Mag_extracted.png', format='png',dpi=1000)
 
-def getWdsInterestingHere():
-    global wdsInterestingHere
-    return wdsInterestingHere
 
-def getWdsInteresting():
-    global wdsInteresting
-    return wdsInteresting
-
+setTimeConstraints()
+setStarConstraints()
 constrain()
 #inputConstrain()
 #print(wdsInteresting)
-#print(wdsInterestingHere)
+print(wdsInterestingHere)
 #write()
 #plotStars(wdsInteresting)
 #plotMagSep(wdsInteresting)

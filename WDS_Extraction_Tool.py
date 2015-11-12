@@ -255,9 +255,9 @@ def plotMagSep(catalog):
     plt.ylabel('Magnitude')
     plt.savefig('Sep_v_Mag_extracted.png', format='png',dpi=1000)
 
-
-setTimeConstraints()
-setStarConstraints()
+## TODO if you call constrain more than once everything 
+#setTimeConstraints()
+#setStarConstraints()
 #constrain()
 #inputConstrain()
 #print(wdsInteresting)

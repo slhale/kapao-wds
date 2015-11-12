@@ -19,20 +19,24 @@ class HelloWorld:
     # This constrains the WDS table.
     # This ignores inputs and directly accesses the input Entry fields. 
     def constrain(self, widget, data=None):
-        #print self.startHAInput.get_text()
+        # Get the inputs from the user entry fields 
+        # time constraints
         startHAInput = float(self.startHAInput.get_text())
         stopHAInput = float(self.stopHAInput.get_text())
+        # star contraints
+        separationInput = (float(self.upperSeparationInput.get_text()), float(self.lowerSeparationInput.get_text()))
+        magnitudeInput = (float(self.upperMagnitudeInput.get_text()), float(self.lowerMagnitudeInput.get_text()))
+        deltaMagInput = (float(self.upperDeltaMagInput.get_text()), float(self.lowerDeltaMagInput.get_text()))
         
         # Apply the user inputs as the constraints
-        #wdsExtractor.setTimeConstraints()#startHA=startHAInput, stopHA=stopHAInput)
-        #wdsExtractor.setStarConstraints()
+        wdsExtractor.setTimeConstraints(startHA=startHAInput, stopHA=stopHAInput)
+        wdsExtractor.setStarConstraints(separation=separationInput, magnitude=magnitudeInput, deltaMag=deltaMagInput)
         
         # Constrain the wds table
         wdsExtractor.constrain()
         
         # Display the new wds table
         self.text.set_text(str(wdsExtractor.getWdsInterestingHere()))
-        
 
     def delete_event(self, widget, event, data=None):
         # If you return FALSE in the "delete_event" signal handler,
@@ -138,7 +142,7 @@ class HelloWorld:
         self.timeConstrainLabel = gtk.Label("Time constraints:")
         
         # Attach it to the top row of the table
-        self.inputsTable.attach(self.timeConstrainLabel, 0, 1, 0, 1)#left_attach, right_attach, top_attach, bottom_attach)
+        self.inputsTable.attach(self.timeConstrainLabel, left_attach=0, right_attach=1, top_attach=0, bottom_attach=1)
         self.timeConstrainLabel.show()
         
         
@@ -147,23 +151,26 @@ class HelloWorld:
         self.stopHALabel = gtk.Label("Stop HA")
         
         # Attach them to the 2nd row of the table
-        self.inputsTable.attach(self.startHALabel, 0, 1, 1, 2)#left_attach, right_attach, top_attach, bottom_attach)
+        self.inputsTable.attach(self.startHALabel, left_attach=0, right_attach=1, top_attach=1, bottom_attach=2)
         self.startHALabel.show()
-        self.inputsTable.attach(self.stopHALabel, 1, 2, 1, 2)#left_attach, right_attach, top_attach, bottom_attach)
+        self.inputsTable.attach(self.stopHALabel, left_attach=1, right_attach=2, top_attach=1, bottom_attach=2)
         self.stopHALabel.show()
         
         
-        # Make input field for the user 
+        # Make time input fields for the user 
         # They start out with default values 
         self.startHAInput = gtk.Entry()
         self.startHAInput.set_text("180000.0")
         self.stopHAInput = gtk.Entry()
         self.stopHAInput.set_text("240000.0")
         
+        # Set the width of the entry fields 
+        self.startHAInput.set_width_chars(8)
+        
         # Attach them to the 3rd row of the table
-        self.inputsTable.attach(self.startHAInput, 0, 1, 2, 3)#left_attach, right_attach, top_attach, bottom_attach)
+        self.inputsTable.attach(self.startHAInput, left_attach=0, right_attach=1, top_attach=2, bottom_attach=3)
         self.startHAInput.show()
-        self.inputsTable.attach(self.stopHAInput, 1, 2, 2, 3)#left_attach, right_attach, top_attach, bottom_attach)
+        self.inputsTable.attach(self.stopHAInput, left_attach=1, right_attach=2, top_attach=2, bottom_attach=3)
         self.stopHAInput.show()
         
         
@@ -173,7 +180,7 @@ class HelloWorld:
         self.starConstrainLabel = gtk.Label("Star constraints:")
         
         # Attach it to the 4th row of the table
-        self.inputsTable.attach(self.starConstrainLabel, 0, 1, 3, 4)#left_attach, right_attach, top_attach, bottom_attach)
+        self.inputsTable.attach(self.starConstrainLabel, left_attach=0, right_attach=1, top_attach=3, bottom_attach=4)
         self.starConstrainLabel.show()
         
         
@@ -183,14 +190,44 @@ class HelloWorld:
         self.deltaMagLabel = gtk.Label("Delta Magnitude")
         
         # Attach them to the 5th row of the table
-        self.inputsTable.attach(self.separationLabel, 0, 1, 4, 5)#left_attach, right_attach, top_attach, bottom_attach)
+        self.inputsTable.attach(self.separationLabel, 0, 2, 4, 5)#left_attach, right_attach, top_attach, bottom_attach)
         self.separationLabel.show()
-        self.inputsTable.attach(self.magnitudeLabel, 1, 2, 4, 5)#left_attach, right_attach, top_attach, bottom_attach)
+        self.inputsTable.attach(self.magnitudeLabel, 2, 4, 4, 5)#left_attach, right_attach, top_attach, bottom_attach)
         self.magnitudeLabel.show()
-        self.inputsTable.attach(self.deltaMagLabel, 2, 3, 4, 5)#left_attach, right_attach, top_attach, bottom_attach)
+        self.inputsTable.attach(self.deltaMagLabel, 4, 6, 4, 5)#left_attach, right_attach, top_attach, bottom_attach)
         self.deltaMagLabel.show()
         
-        # TODO finish GUIing the inpts
+        
+        # Make star input fields for the user 
+        # They start out with default values 
+        self.lowerSeparationInput = gtk.Entry()
+        self.lowerSeparationInput.set_text("0.5")
+        self.upperSeparationInput = gtk.Entry()
+        self.upperSeparationInput.set_text("2.0")
+        
+        self.lowerMagnitudeInput = gtk.Entry()
+        self.lowerMagnitudeInput.set_text("-10.0")
+        self.upperMagnitudeInput = gtk.Entry()
+        self.upperMagnitudeInput.set_text("7.0")
+        
+        self.lowerDeltaMagInput = gtk.Entry()
+        self.lowerDeltaMagInput.set_text("-2.0")
+        self.upperDeltaMagInput = gtk.Entry()
+        self.upperDeltaMagInput.set_text("2.0")
+        
+        # Attach them to the 6th row of the table
+        self.inputsTable.attach(self.lowerSeparationInput, left_attach=0, right_attach=1, top_attach=5, bottom_attach=6)
+        self.lowerSeparationInput.show()
+        self.inputsTable.attach(self.upperSeparationInput, left_attach=1, right_attach=2, top_attach=5, bottom_attach=6)
+        self.upperSeparationInput.show()
+        self.inputsTable.attach(self.lowerMagnitudeInput, left_attach=2, right_attach=3, top_attach=5, bottom_attach=6)
+        self.lowerMagnitudeInput.show()
+        self.inputsTable.attach(self.upperMagnitudeInput, left_attach=3, right_attach=4, top_attach=5, bottom_attach=6)
+        self.upperMagnitudeInput.show()
+        self.inputsTable.attach(self.lowerDeltaMagInput, left_attach=4, right_attach=5, top_attach=5, bottom_attach=6)
+        self.lowerDeltaMagInput.show()
+        self.inputsTable.attach(self.upperDeltaMagInput, left_attach=5, right_attach=6, top_attach=5, bottom_attach=6)
+        self.upperDeltaMagInput.show()
         
         
         ######## DO IT BUTTON
@@ -199,7 +236,7 @@ class HelloWorld:
         self.constrainButton = gtk.Button("Constrain")
         
         # Attach it to the 7th row of the table
-        self.inputsTable.attach(self.constrainButton, 0, 1, 6, 7)#left_attach, right_attach, top_attach, bottom_attach)
+        self.inputsTable.attach(self.constrainButton, left_attach=0, right_attach=1, top_attach=6, bottom_attach=7)
         self.constrainButton.show()
         
         # When the button receives the "clicked" signal, it will call the
@@ -207,6 +244,7 @@ class HelloWorld:
         self.constrainButton.connect("clicked", self.constrain, None)
         
         
+        # TODO Make the textview scrollable 
         ############# TEXTVIEW
         ####### Displays the produced WDS table
         

@@ -5,7 +5,7 @@
 import pygtk
 pygtk.require('2.0')
 import gtk
-
+import pango
 import WDS_Extraction_Tool as wdsExtractor
 
 class HelloWorld:
@@ -22,6 +22,17 @@ class HelloWorld:
         #print self.startHAInput.get_text()
         startHAInput = float(self.startHAInput.get_text())
         stopHAInput = float(self.stopHAInput.get_text())
+        
+        # Apply the user inputs as the constraints
+        #wdsExtractor.setTimeConstraints()#startHA=startHAInput, stopHA=stopHAInput)
+        #wdsExtractor.setStarConstraints()
+        
+        # Constrain the wds table
+        wdsExtractor.constrain()
+        
+        # Display the new wds table
+        self.text.set_text(str(wdsExtractor.getWdsInterestingHere()))
+        
 
     def delete_event(self, widget, event, data=None):
         # If you return FALSE in the "delete_event" signal handler,
@@ -57,6 +68,9 @@ class HelloWorld:
     
         # Sets the border width of the window.
         self.window.set_border_width(10)
+        
+        # Make the window always be centered 
+        self.window.set_position(gtk.WIN_POS_CENTER_ALWAYS)
         
         # Make the window visible
         self.window.show()
@@ -203,7 +217,7 @@ class HelloWorld:
         # go into the text view
         self.text = gtk.TextBuffer()
         # TODO set the text to be the WDS table, and make it updateable
-        self.text.set_text("text for the text view blah blah \n tadfhaisdufbausdf")
+        self.text.set_text("")
         
         # Make a text view, which is used to view the text buffer 
         # containing the WDS table
@@ -211,6 +225,9 @@ class HelloWorld:
         
         # Make text uneditable 
         self.textview.set_editable(False)
+        
+        # Change the font to be monospaced 
+        self.textview.modify_font(pango.FontDescription('mono'))
         
         # Add the text to the wds vbox container 
         self.wdsVBox.pack_start(self.textview, True, True, False)#, expand, fill, padding)

@@ -9,16 +9,17 @@ import pango
 import WDS_Extraction_Tool as wdsExtractor
 
 class HelloWorld:
-
-    # This is a callback function. The data arguments are ignored
-    # in this example. More on callbacks below.
-    def hello(self, widget, data=None):
-        print "Hello World"
-        
-    # This is a callback function. 
-    # This constrains the WDS table.
-    # This ignores inputs and directly accesses the input Entry fields. 
+    
     def constrain(self, widget, data=None):
+        '''
+            Constrains the WDS table according to user inputs. 
+            Ignores any arguments.
+            Uses the GUI user entry fields for time and star constraints. 
+            Calls functions from WDS_Extraction_Tool.
+            Sets the text buffer to the constrained wds after it is finished. 
+            This is a callback function for the "Contrain" button. 
+        '''
+        
         # Get the inputs from the user entry fields 
         # time constraints
         startHAInput = float(self.startHAInput.get_text())
@@ -38,6 +39,7 @@ class HelloWorld:
         # Display the new wds table
         self.text.set_text(str(wdsExtractor.getWdsInterestingHere()))
         
+        
     def delete_event(self, widget, event, data=None):
         # If you return FALSE in the "delete_event" signal handler,
         # GTK will emit the "destroy" signal. Returning TRUE means
@@ -49,11 +51,13 @@ class HelloWorld:
         # Change FALSE to TRUE and the main window will not be destroyed
         # with a "delete_event".
         return False
-
+        
+        
     def destroy(self, widget, data=None):
         print "destroy signal occurred"
         gtk.main_quit()
-
+        
+        
     def __init__(self):
         # create a new window
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
@@ -102,32 +106,10 @@ class HelloWorld:
         self.mainHBox.pack_start(self.wdsVBox, True, True, False)#, expand, fill, padding)
         self.wdsVBox.show()
         
-        ########### BUTTON 
         
-        # Creates a new button with the label "Hello World".
-#        self.button = gtk.Button("Hello World")
-    
-        # When the button receives the "clicked" signal, it will call the
-        # function hello() passing it None as its argument.  The hello()
-        # function is defined above.
-#        self.button.connect("clicked", self.hello, None)
-    
-        # This will cause the window to be destroyed by calling
-        # gtk_widget_destroy(window) when "clicked".  Again, the destroy
-        # signal could come from here, or the window manager.
-#        self.button.connect_object("clicked", gtk.Widget.destroy, self.window)
-    
-        # This packs the button into the window (a GTK container).
-        #self.window.add(self.button)
-#        self.vbox.pack_start(self.button, False, False, False)#, expand, fill, padding)
-	    
-	    
-        # The final step is to display this newly created widget.
-#        self.button.show()
+        ##################### OPTIONS
         
-        
-        ############# OPTIONS
-        
+        # TODO find the best options for the filling of the table params
         # Make a table to contain all the input fields 
         self.inputsTable = gtk.Table(rows=7, columns=6, homogeneous=False)
         # Add the inputs table to the wds vbox container 
@@ -190,11 +172,11 @@ class HelloWorld:
         self.deltaMagLabel = gtk.Label("Delta Magnitude")
         
         # Attach them to the 5th row of the table
-        self.inputsTable.attach(self.separationLabel, 0, 2, 4, 5)#left_attach, right_attach, top_attach, bottom_attach)
+        self.inputsTable.attach(self.separationLabel, left_attach=0, right_attach=2, top_attach=4, bottom_attach=5)
         self.separationLabel.show()
-        self.inputsTable.attach(self.magnitudeLabel, 2, 4, 4, 5)#left_attach, right_attach, top_attach, bottom_attach)
+        self.inputsTable.attach(self.magnitudeLabel, left_attach=2, right_attach=4, top_attach=4, bottom_attach=5)
         self.magnitudeLabel.show()
-        self.inputsTable.attach(self.deltaMagLabel, 4, 6, 4, 5)#left_attach, right_attach, top_attach, bottom_attach)
+        self.inputsTable.attach(self.deltaMagLabel, left_attach=4, right_attach=6, top_attach=4, bottom_attach=5)
         self.deltaMagLabel.show()
         
         
@@ -244,14 +226,12 @@ class HelloWorld:
         self.constrainButton.connect("clicked", self.constrain, None)
         
         
-        # TODO Make the textview scrollable 
         ############# TEXTBUFFER
         ####### Contains the actual text for the WDS table 
         
         # Make a text buffer, which contains the actual text to 
         # go into the text view
         self.text = gtk.TextBuffer()
-        # TODO set the text to be the WDS table, and make it updateable
         self.text.set_text("")
         
         ############# TEXTVIEW
@@ -267,9 +247,6 @@ class HelloWorld:
         # Change the font to be monospaced 
         self.textview.modify_font(pango.FontDescription('mono'))
         
-        # Add the text to the wds vbox container 
-#        self.wdsVBox.pack_start(self.textview, True, True, False)#, expand, fill, padding)
-#        self.textview.show()
         
         ############# SCROLL
         ####### Contains the textview and makes it scrollable
@@ -288,11 +265,13 @@ class HelloWorld:
         self.wdsVBox.pack_start(self.wdsScroller, True, True, False)#, expand, fill, padding)
         self.wdsScroller.show()
         
+        
     def main(self):
         # All PyGTK applications must have a gtk.main(). Control ends here
         # and waits for an event to occur (like a key press or mouse event).
         gtk.main()
-
+        
+        
 # If the program is run directly or passed as an argument to the python
 # interpreter then create a HelloWorld instance and show it
 if __name__ == "__main__":

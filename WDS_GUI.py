@@ -37,7 +37,7 @@ class HelloWorld:
         
         # Display the new wds table
         self.text.set_text(str(wdsExtractor.getWdsInterestingHere()))
-
+        
     def delete_event(self, widget, event, data=None):
         # If you return FALSE in the "delete_event" signal handler,
         # GTK will emit the "destroy" signal. Returning TRUE means
@@ -245,17 +245,17 @@ class HelloWorld:
         
         
         # TODO Make the textview scrollable 
-        ############# TEXTVIEW
-        ####### Displays the produced WDS table
-        
-        ######## TEXTBUFFER
-        ## Contains the actual text for the WDS table 
+        ############# TEXTBUFFER
+        ####### Contains the actual text for the WDS table 
         
         # Make a text buffer, which contains the actual text to 
         # go into the text view
         self.text = gtk.TextBuffer()
         # TODO set the text to be the WDS table, and make it updateable
         self.text.set_text("")
+        
+        ############# TEXTVIEW
+        ####### Displays the produced WDS table
         
         # Make a text view, which is used to view the text buffer 
         # containing the WDS table
@@ -268,9 +268,25 @@ class HelloWorld:
         self.textview.modify_font(pango.FontDescription('mono'))
         
         # Add the text to the wds vbox container 
-        self.wdsVBox.pack_start(self.textview, True, True, False)#, expand, fill, padding)
+#        self.wdsVBox.pack_start(self.textview, True, True, False)#, expand, fill, padding)
+#        self.textview.show()
+        
+        ############# SCROLL
+        ####### Contains the textview and makes it scrollable
+        
+        # Make the scroll window 
+        self.wdsScroller = gtk.ScrolledWindow(hadjustment=None, vadjustment=None)
+        
+        # Set when the horiz and vertical scrollbars appear 
+        self.wdsScroller.set_policy(hscrollbar_policy=gtk.POLICY_NEVER, vscrollbar_policy=gtk.POLICY_AUTOMATIC)
+        
+        # Add the textview to the scroll window
+        self.wdsScroller.add(self.textview)
         self.textview.show()
         
+        # Add the scroller to the wds vbox container 
+        self.wdsVBox.pack_start(self.wdsScroller, True, True, False)#, expand, fill, padding)
+        self.wdsScroller.show()
         
     def main(self):
         # All PyGTK applications must have a gtk.main(). Control ends here

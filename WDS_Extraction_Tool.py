@@ -71,9 +71,9 @@ radec = 'col21'
 """
 
 # Constriant parameters
-# constraints is the actual numbers, while limits has the boolean statements
+# Constraints is the actual numbers -- upper and lower bounds for
+# different properties.
 constraints = {}
-limits = {}
 
 def getWdsInterestingHere():
     '''
@@ -112,22 +112,30 @@ def calcDeltaMags():
     
     return Delta_mag
 
+
 # TODO This doesn't work yet
 def calcSiderealTime(longitude=-117, time=Time.now()):
-    ''' Calculate the sidereal time for a specific time and place. 
-        By default calculates for the current time at longitude -117. ''' 
+    '''
+        Calculate the sidereal time for a specific time and place. 
+        By default calculates for the current time at longitude -117.
+        
+        This function cannot work until 
+        https://github.com/astropy/astropy/issues/3275
+        has been resolved. 
+    ''' 
     
-    return time.sidereal_time('apparent', longitude=-117)
+    # Set the time and place
+    nowtime = Time.now()
+    longitude = -117
+    # Get the corresponding sidereal time
+#    siderealTime = nowtime.sidereal_time('apparent', longitude)
     
-
-# Sets the upper and lower bounds for constraining stars of the wds table
-# does not actually apply the constraints
-# takes tuples of upper and lower floats, in the format (upper, lower)
+    
 def setStarConstraints(separation=(2.0, 0.5), magnitude=(7.0, -10.0), deltaMag=(2.0, -2.0)):
     '''
         Set the upper and lower bounds for the constraints which 
         are relevant to star properties. (Does not constrain the wds list.)
-        Takes tuples in the format of and (upper, lower) bound pair. 
+        Takes tuples in the format of and (upper, lower) pair of bounds. 
         The constraining properties are separation, magnitude, and deltaMag. 
     '''
     global constraints
@@ -135,11 +143,14 @@ def setStarConstraints(separation=(2.0, 0.5), magnitude=(7.0, -10.0), deltaMag=(
     constraints['separation'] = separation
     constraints['magnitude'] = magnitude
     constraints['delta magnitude'] = deltaMag
+    
 
-# Sets the upper and lower bounds for constraining stars of the wds table
-# does not actually apply the constraints
-# takes floats in format hhmmss for hour angle
 # TODO replace sidereal adjustment parameter with an actual calculation for it 
+# Depends on the sidereal time github issue being fixed
+
+# The default inputs are currently specific to the 2015 Oct 15 observation date 
+# On this date the sidereal time will be about 1.6 h ahead of earth time
+# Uses the global constrain var to determine how the wds table is constrained
 def setTimeConstraints(startHA=190000.0, stopHA=240000.0, siderealAdjust=13000.0):
     '''
         Set the upper and lower bounds for the constraints which 
@@ -160,11 +171,8 @@ def setTimeConstraints(startHA=190000.0, stopHA=240000.0, siderealAdjust=13000.0
     # the stop time is the "upper bound", so it's first in the tuple
     constraints['ra'] = (stopRA, startRA)
     
-
-# The default inputs are currently specific to the 2015 Oct 15 observation date 
-# On this date the sidereal time will be about 1.6 h ahead of earth time
-# Uses the global constrain var to determine how the wds table is constrained
-def constrain():#viewStart=190000.0, viewEnd=20000.0, siderealAdjust=13000.0):
+    
+def constrain():
     '''
         Limits the WDS table to only stars that match our criteria.
         Creates wdsInteresting and wdsInterestingHere tables which 
@@ -178,31 +186,26 @@ def constrain():#viewStart=190000.0, viewEnd=20000.0, siderealAdjust=13000.0):
     global wdsInteresting
     global wdsInterestingHere
     global constraints
-    global limits
     
     # Reset what wdsInteresting and wdsInterestingHere are so that we 
     # can get stars which we previously constrained out 
     wdsInteresting = wdsMaster
     wdsInterestingHere = wdsMaster
     
+    # Make a dictionary of limits (just for compactness).
+    # Contains the boolean expressions with witch the wds table 
+    # will be compared to. 
+    limits = {}
+    
     # Make a bunch of limits for a bunch of different things
-    #limits['separation'] = (wdsInteresting[sepFirst] > 0.5) & (wdsInteresting[sepFirst] < 2.0)
     limits['separation'] = (constraints['separation'][0] > wdsInteresting[sepFirst]) & (wdsInteresting[sepFirst] > constraints['separation'][1])
     
-    # Currently trying to not be too restrictive on mag 
-    # Would get considerably more if switched from 7.0 to 8.0 
-    #limits['magnitude'] = (wdsInteresting[priMag] > -10.0) & (wdsInteresting[priMag] < 7.0)
     limits['magnitude'] = (constraints['magnitude'][0] > wdsInteresting[priMag]) & (wdsInteresting[priMag] > constraints['magnitude'][1])
     
     ## TODO Add color of stars as a thing
     
     deltaMag = calcDeltaMags()
-    #limits['delta magnitude'] = (deltaMag > -2.0) & (deltaMag < 2.0)
     limits['delta magnitude'] = (constraints['delta magnitude'][0] > deltaMag) & (deltaMag > constraints['delta magnitude'][1])
-    
-    # Limit the viewing to within 19 h to 2 h 
-    #  i.e. viewing from 8pm to 10pm, looking back 1h and ahead 4h
-    #limits['ra'] = (wdsInteresting[raCoors] > (viewStart + siderealAdjust)) | (wdsInteresting[raCoors] < (viewEnd + siderealAdjust))
     
     # Limit the viewing to times/HA/RA that are acceptable 
     # If the stop time is less than the start, we have crossed over the 
@@ -217,13 +220,13 @@ def constrain():#viewStart=190000.0, viewEnd=20000.0, siderealAdjust=13000.0):
     # Using JPL's latitude, 34.2 deg = 34 deg
     limits['dec'] = (wdsInteresting[decCoors] > (340000.0 - 350000.0)) & (wdsInteresting[decCoors] < (340000.0 + 350000.0))
     
-    # Combine all the limits together to get the full constraints
-    generalConstraints = limits['separation'] & limits['magnitude'] & limits['delta magnitude']
-    hereConstraints = limits['separation'] & limits['magnitude'] & limits['delta magnitude'] & limits['dec'] & limits['ra']
+    # Combine all the limits together to get the full limits
+    generalLimits = limits['separation'] & limits['magnitude'] & limits['delta magnitude']
+    hereLimits = limits['separation'] & limits['magnitude'] & limits['delta magnitude'] & limits['dec'] & limits['ra']
     
-    # Apply the constraints to the catalog
-    wdsInteresting = wdsInteresting[np.argwhere(generalConstraints)]
-    wdsInterestingHere = wdsInterestingHere[np.argwhere(hereConstraints)]
+    # Apply the limits to the catalog
+    wdsInteresting = wdsInteresting[np.argwhere(generalLimits)]
+    wdsInterestingHere = wdsInterestingHere[np.argwhere(hereLimits)]
     
 
 def write(filename='object_list.txt'):
@@ -280,4 +283,5 @@ def plotMagSep(catalog):
 #write()
 #plotStars(wdsInteresting)
 #plotMagSep(wdsInteresting)
+calcSiderealTime()
 

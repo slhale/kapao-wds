@@ -147,10 +147,16 @@ def setTimeConstraints(startHA=190000.0, stopHA=240000.0, siderealAdjust=13000.0
 # Uses the global constrain var to determine how the wds table is constrained
 def constrain():#viewStart=190000.0, viewEnd=20000.0, siderealAdjust=13000.0):
     ''' Limit wdsInteresting to only stars that match our criteria ''' 
+    global wdsMaster
     global wdsInteresting
     global wdsInterestingHere
     global constraints
     global limits
+    
+    # Reset what wdsInteresting and wdsInterestingHere are so that we 
+    # can get stars which we previously constrained out 
+    wdsInteresting = wdsMaster
+    wdsInterestingHere = wdsMaster
     
     # Make a bunch of limits for a bunch of different things
     #limits['separation'] = (wdsInteresting[sepFirst] > 0.5) & (wdsInteresting[sepFirst] < 2.0)
@@ -255,7 +261,6 @@ def plotMagSep(catalog):
     plt.ylabel('Magnitude')
     plt.savefig('Sep_v_Mag_extracted.png', format='png',dpi=1000)
 
-## TODO if you call constrain more than once everything 
 #setTimeConstraints()
 #setStarConstraints()
 #constrain()

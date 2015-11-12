@@ -52,7 +52,7 @@ priDecProperMotion = 'col11'
 raCoors = 'col14'
 decCoors = 'col15'
 #"""
-#####################################Implement use of other WDS later
+##################################### TODO Implement use of other WDS later
 newCols = """
 discovererAndNumber = 'col2'
 numObjs = 'col3'
@@ -76,19 +76,31 @@ constraints = {}
 limits = {}
 
 def getWdsInterestingHere():
+    '''
+        Gets the WDS table constrained to what stars are both 
+        interesting and viewable. 
+    '''
     global wdsInterestingHere
     return wdsInterestingHere
 
 def getWdsInteresting():
+    '''
+        Gets the WDS table constrained to what stars are interesting. 
+    '''
     global wdsInteresting
     return wdsInteresting
 
 def getWdsMaster():
+    '''
+        Gets the master WDS table. 
+    '''
     global wdsMaster
     return wdsMaster
 
 def calcDeltaMags():
-    ''' Creates an array with the delta magnitudes of WDS objects '''
+    '''
+        Creates an array with the delta magnitudes of WDS objects.
+    '''
     # Calculating magnitude difference for each object
     # Make nice formats...
     Pri_mag_g = ma.filled(wdsInteresting[priMag],[-999])
@@ -112,8 +124,12 @@ def calcSiderealTime(longitude=-117, time=Time.now()):
 # does not actually apply the constraints
 # takes tuples of upper and lower floats, in the format (upper, lower)
 def setStarConstraints(separation=(2.0, 0.5), magnitude=(7.0, -10.0), deltaMag=(2.0, -2.0)):
-    ''' Set the upper and lower bounds for the constraints.
-        (Does not constrain the wds list.) '''
+    '''
+        Set the upper and lower bounds for the constraints which 
+        are relevant to star properties. (Does not constrain the wds list.)
+        Takes tuples in the format of and (upper, lower) bound pair. 
+        The constraining properties are separation, magnitude, and deltaMag. 
+    '''
     global constraints
     
     constraints['separation'] = separation
@@ -125,8 +141,11 @@ def setStarConstraints(separation=(2.0, 0.5), magnitude=(7.0, -10.0), deltaMag=(
 # takes floats in format hhmmss for hour angle
 # TODO replace sidereal adjustment parameter with an actual calculation for it 
 def setTimeConstraints(startHA=190000.0, stopHA=240000.0, siderealAdjust=13000.0):
-    ''' Set the upper and lower bounds for the constraints.
-        (Does not constrain the wds list.) '''
+    '''
+        Set the upper and lower bounds for the constraints which 
+        are relevant to viewing time. (Does not constrain the wds list.)
+        Takes floats for startHA, stopHA, and siderealAdjust. 
+    '''
     global constraints
     
     startRA = startHA + siderealAdjust
@@ -146,7 +165,15 @@ def setTimeConstraints(startHA=190000.0, stopHA=240000.0, siderealAdjust=13000.0
 # On this date the sidereal time will be about 1.6 h ahead of earth time
 # Uses the global constrain var to determine how the wds table is constrained
 def constrain():#viewStart=190000.0, viewEnd=20000.0, siderealAdjust=13000.0):
-    ''' Limit wdsInteresting to only stars that match our criteria ''' 
+    '''
+        Limits the WDS table to only stars that match our criteria.
+        Creates wdsInteresting and wdsInterestingHere tables which 
+        have constrained by star properties or by star properties and
+        star location (in time).
+        Does not modify wdsMaster.
+        Has no returns, instead modifies the globals wdsInteresting 
+        and wdsInterestingHere.
+    ''' 
     global wdsMaster
     global wdsInteresting
     global wdsInterestingHere
@@ -198,29 +225,12 @@ def constrain():#viewStart=190000.0, viewEnd=20000.0, siderealAdjust=13000.0):
     wdsInteresting = wdsInteresting[np.argwhere(generalConstraints)]
     wdsInterestingHere = wdsInterestingHere[np.argwhere(hereConstraints)]
     
-    # Testing adding rows 
-    #wdsInterestingHere.add_row(['testing', 'TESTING', 'Test'])
-#    print(len(wdsInterestingHere))
-#    print(len(wdsInterestingHere[0]))
-#    newRow = []
-#    for i in range(0, len(wdsInterestingHere[0])):
-#        newRow.append(i)
-#    print(newRow)
-#    wdsInterestingHere.insert_row(1,vals=newRow)
-#    wdsInterestingHere.add_row(newRow)
-
-#def inputConstrain():
-#    startTime = float(raw_input("start time (earth) for viewing: "))
-#    endTime = float(raw_input("end time (earth) for viewing: "))
-#    lookBack = float(raw_input("how many hour anlges to look back when viewing: "))
-#    lookAhead = float(raw_input("how many hour anlges to look forward when viewing: "))
-#    siderealAdjust = float(raw_input("difference between sidereal and earth today?: "))
-#    
-#    constrain(startTime-lookBack, endTime+lookAhead, siderealAdjust)
 
 def write(filename='object_list.txt'):
-    ''' Writes the contents of wdsInteresting to a file. 
-        The default filename is object_list.txt '''
+    '''
+        Writes the contents of wdsInteresting to a file. 
+        The default filename is object_list.txt
+    '''
     global wdsInteresting
     
     log = open(filename, "w")

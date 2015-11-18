@@ -22,11 +22,50 @@ from astropy.coordinates import SkyCoord
 import matplotlib.cm as cm
 #imports added by Sarah
 from astropy.time import Time
+import re
+
+#TODO document
+def formatNewWds(wds):
+    '''
+    
+    '''
+    
+    radec = wds['col21']# TODO later set this to radec col
+    
+    ra = []
+    dec = []
+    split = ''
+    # Loop over all the radec angles
+    for i  in range(0, len(radec)):
+        # Split the RA from the Dec
+        # the ra appears before the dec, delimited by a + or -
+        # if it's in the expected format, then the split should be
+        #  [ra, + or -, dec]
+        split = re.split('([+-])', radec[i])
+        # If the split worked, add the ra and decs to new lists
+        if len(split) == 3:
+            ra.append(float(split[0]))
+            dec.append(float(split[1]+split[2]))
+        # Otherwise append blank values to the new lists to keep the lengths correct
+        else:
+            ra.append(-999999.9)
+            dec.append(-999999.9)
+    print(ra[0], ra[-1])
+    print(dec[0], dec[-1])
+    
+    # Add the new lists as two new columns to the wds table
+    raCol = astropy.table.Column(data=ra, name='RA')
+    decCol = astropy.table.Column(data=dec, name='DEC')
+    wds.add_column(raCol)
+    wds.add_column(decCol)
+    
+    return wds
 
 # Import the WDS catalog
-#wdsMaster = astropy.io.ascii.read('WDS_CSV_cat_1-24_FIN2.txt', 
-#                delimiter =',',guess=False, Reader =ascii.NoHeader,
-#                fill_values=[('.', '-999'), ('', '-999')])
+newWdsMaster = astropy.io.ascii.read('WDS_CSV_cat.txt', 
+                delimiter =',',guess=False, Reader =ascii.NoHeader,
+                fill_values=[('.', '-999'), ('', '-999')])
+newWdsMaster = formatNewWds(newWdsMaster)
 wdsMaster = astropy.io.ascii.read('WDS_CSV_cat_1-24_FIN2.txt', #'WDS_CSV_cat.txt', 
                 delimiter =',',guess=False, Reader =ascii.NoHeader,
                 fill_values=[('.', '-999'), ('', '-999')])
@@ -75,6 +114,8 @@ radec = 'col21'
 # different properties.
 constraints = {}
 
+
+
 def getWdsInterestingHere():
     '''
         Gets the WDS table constrained to what stars are both 
@@ -111,6 +152,16 @@ def calcDeltaMags():
     Delta_mag = np.subtract(Pri_mag_gg, Sec_mag_gg)
     
     return Delta_mag
+
+#TODO TODO this function is now redundant and unneded
+def parseRaDec():
+    ''' '''
+    # TODO 
+    #can make a list and then convert to column, then put on the table 
+    print(newWdsMaster)
+    radecCol = newWdsMaster['col21']
+    print(radecCol)
+    print(len(radecCol))
 
 
 # TODO This doesn't work yet
@@ -274,6 +325,8 @@ def plotMagSep(catalog):
     plt.ylabel('Magnitude')
     plt.savefig('Sep_v_Mag_extracted.png', format='png',dpi=1000)
 
+print(newWdsMaster)
+#parseRaDec()
 #setTimeConstraints()
 #setStarConstraints()
 #constrain()
@@ -283,5 +336,5 @@ def plotMagSep(catalog):
 #write()
 #plotStars(wdsInteresting)
 #plotMagSep(wdsInteresting)
-calcSiderealTime()
+#calcSiderealTime()
 

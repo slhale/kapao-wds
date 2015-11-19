@@ -110,24 +110,39 @@ raCoors = 'RA'
 decCoors = 'Dec'
 """
 
-## Rename all the columns to useful names
-wdsMaster['col2'].name = 'Name'
-wdsMaster['col3'].name = 'Num Objs'
-wdsMaster['col7'].name = 'Pos Angl First'
-wdsMaster['col8'].name = 'Pos Angl Last'
-wdsMaster['col9'].name = 'Sep First'
-wdsMaster['col10'].name = 'Sep Last'
-wdsMaster['col11'].name = 'Pri Mag'
-wdsMaster['col12'].name = 'Sec Mag'
-wdsMaster['col13'].name = 'Spec Type'
-wdsMaster['col14'].name = 'Pri RA Prop Motion'
-wdsMaster['col15'].name = 'Pri Dec Prop Motion'
+# Make this strings be variables so we can more easily change
+# how the string names look without changing everything else
+discovererAndNumber = 'Name'
+numObjs = 'Num Objs'
+posAngleFirst = 'Pos Angl First'
+posAngleLast = 'Pos Angl Last'
+sepFirst = 'Sep First'
+sepLast = 'Sep Last'
+priMag = 'Pri Mag'
+secMag = 'Sec Mag'
+spectralType = 'Spec Type'
+priRaProperMotion = 'Pri RA Prop Motion'
+priDecProperMotion = 'Pri Dec Prop Motion'
+raCoors = 'RA'
+decCoors = 'Dec'
+
+## Rename all the columns to the useful names
+wdsMaster['col2'].name = discovererAndNumber
+wdsMaster['col3'].name = numObjs
+wdsMaster['col7'].name = posAngleFirst
+wdsMaster['col8'].name = posAngleLast
+wdsMaster['col9'].name = sepFirst
+wdsMaster['col10'].name = sepLast
+wdsMaster['col11'].name = priMag
+wdsMaster['col12'].name = secMag
+wdsMaster['col13'].name = spectralType
+wdsMaster['col14'].name = priRaProperMotion
+wdsMaster['col15'].name = priDecProperMotion
 
 # Constriant parameters
 # Constraints is the actual numbers -- upper and lower bounds for
 # different properties.
 constraints = {}
-
 
 
 def getWdsInterestingHere():

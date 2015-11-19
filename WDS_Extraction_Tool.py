@@ -24,10 +24,11 @@ import matplotlib.cm as cm
 from astropy.time import Time
 import re
 
-#TODO document
-def formatNewWds(wds):
+def formatWds(wds):
     '''
-    
+        Converts the combined RADec column of the WDS master table to 
+        two separate columns of RA and Dec. 
+        Takes the WDS table and returns a modified version of it. 
     '''
     
     radec = wds['col21']# TODO later set this to radec col
@@ -50,25 +51,23 @@ def formatNewWds(wds):
         else:
             ra.append(-999999.9)
             dec.append(-999999.9)
-    print(ra[0], ra[-1])
-    print(dec[0], dec[-1])
     
     # Add the new lists as two new columns to the wds table
     raCol = astropy.table.Column(data=ra, name='RA')
-    decCol = astropy.table.Column(data=dec, name='DEC')
+    decCol = astropy.table.Column(data=dec, name='Dec')
     wds.add_column(raCol)
     wds.add_column(decCol)
     
     return wds
 
 # Import the WDS catalog
-newWdsMaster = astropy.io.ascii.read('WDS_CSV_cat.txt', 
+wdsMaster = astropy.io.ascii.read('WDS_CSV_cat.txt', 
                 delimiter =',',guess=False, Reader =ascii.NoHeader,
                 fill_values=[('.', '-999'), ('', '-999')])
-newWdsMaster = formatNewWds(newWdsMaster)
-wdsMaster = astropy.io.ascii.read('WDS_CSV_cat_1-24_FIN2.txt', #'WDS_CSV_cat.txt', 
-                delimiter =',',guess=False, Reader =ascii.NoHeader,
-                fill_values=[('.', '-999'), ('', '-999')])
+wdsMaster = formatWds(wdsMaster)
+#oldwdsMaster = astropy.io.ascii.read('WDS_CSV_cat_1-24_FIN2.txt', #'WDS_CSV_cat.txt', 
+#                delimiter =',',guess=False, Reader =ascii.NoHeader,
+#                fill_values=[('.', '-999'), ('', '-999')])
 # Create the sub-catalog we want (to be narrowed down by constrain function)
 wdsInteresting = wdsMaster
 # Create sub-sub catalog which has the interesting stars that we can view
@@ -76,7 +75,7 @@ wdsInterestingHere = wdsInteresting
 
 # Associate each row with its type
 # e.g. Using wdsMaster[numObjs] is equiv to wdsMaster['col2']
-#oldCols = """
+oldCols = """
 discovererAndNumber = 'col1'
 numObjs = 'col2'
 posAngleFirst = 'col3'
@@ -107,7 +106,22 @@ priDecProperMotion = 'col15'
 #raCoors = 'col20'## NOPE radec is on 21, need to parse to get each
 #decCoors = 'col21'
 radec = 'col21'
+raCoors = 'RA'
+decCoors = 'Dec'
 """
+
+## Rename all the columns to useful names
+wdsMaster['col2'].name = 'Name'
+wdsMaster['col3'].name = 'Num Objs'
+wdsMaster['col7'].name = 'Pos Angl First'
+wdsMaster['col8'].name = 'Pos Angl Last'
+wdsMaster['col9'].name = 'Sep First'
+wdsMaster['col10'].name = 'Sep Last'
+wdsMaster['col11'].name = 'Pri Mag'
+wdsMaster['col12'].name = 'Sec Mag'
+wdsMaster['col13'].name = 'Spec Type'
+wdsMaster['col14'].name = 'Pri RA Prop Motion'
+wdsMaster['col15'].name = 'Pri Dec Prop Motion'
 
 # Constriant parameters
 # Constraints is the actual numbers -- upper and lower bounds for
@@ -152,16 +166,6 @@ def calcDeltaMags():
     Delta_mag = np.subtract(Pri_mag_gg, Sec_mag_gg)
     
     return Delta_mag
-
-#TODO TODO this function is now redundant and unneded
-def parseRaDec():
-    ''' '''
-    # TODO 
-    #can make a list and then convert to column, then put on the table 
-    print(newWdsMaster)
-    radecCol = newWdsMaster['col21']
-    print(radecCol)
-    print(len(radecCol))
 
 
 # TODO This doesn't work yet
@@ -325,16 +329,12 @@ def plotMagSep(catalog):
     plt.ylabel('Magnitude')
     plt.savefig('Sep_v_Mag_extracted.png', format='png',dpi=1000)
 
-print(newWdsMaster)
-#parseRaDec()
-#setTimeConstraints()
-#setStarConstraints()
-#constrain()
-#inputConstrain()
-#print(wdsInteresting)
-#print(wdsInterestingHere)
-#write()
-#plotStars(wdsInteresting)
-#plotMagSep(wdsInteresting)
-#calcSiderealTime()
-
+#print(wdsMaster)
+setTimeConstraints()
+setStarConstraints()
+constrain()
+print(wdsInteresting)
+print(wdsInterestingHere)
+##write()
+##plotStars(wdsInteresting)
+##plotMagSep(wdsInteresting)

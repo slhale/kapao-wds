@@ -194,12 +194,34 @@ def calcSiderealTime(longitude=-117, time=Time.now()):
         has been resolved. 
     ''' 
     
+    # Sidereal time on Nov 26, 2015 at 0-oclock is 4:16:00 ish 
+
     # Set the time and place
-    nowtime = Time.now()
-    longitude = -117
+    #nowtime = Time.now()
+    #longitude = -117
     # Get the corresponding sidereal time
 #    siderealTime = nowtime.sidereal_time('apparent', longitude)
     
+    startTime = Time('2015-11-26 00:00:00', scale='utc')
+    startSidereal = 041600.0 #'04:16:00'
+    
+    # If the sidereal time we are trying to calculate is after this, then we can 
+    # calculate it by adjusting the sidereal time by 4 minutes for each day after
+    elapsedDays = time - startTime # float of days 
+    adjustment = float(str(elapsedDays)) * 4 # in minutes
+    print(elapsedDays)
+    print(float(str(elapsedDays)))
+    # if the adjustment is greater than 60, then we need to account for this when 
+    # converting into hhmmss
+    hours = 0
+    mins = adjustment
+    if adjustment >= 60:
+        hours
+        
+    sidereal = startSidereal + mins*100 + hours*10000
+    print(mins)
+    print(hours)
+    print(sidereal)
     
 def setStarConstraints(separation=(2.0, 0.5), magnitude=(7.0, -10.0), deltaMag=(2.0, -2.0)):
     '''
@@ -345,11 +367,11 @@ def plotMagSep(catalog):
     plt.savefig('Sep_v_Mag_extracted.png', format='png',dpi=1000)
 
 #print(wdsMaster)
-setTimeConstraints()
-setStarConstraints()
-constrain()
-print(wdsInteresting)
-print(wdsInterestingHere)
+#setTimeConstraints()
+#setStarConstraints()
+#constrain()
+#print(wdsInteresting)
+#print(wdsInterestingHere)
 ##write()
-##plotStars(wdsInteresting)
-##plotMagSep(wdsInteresting)
+calcSiderealTime()
+

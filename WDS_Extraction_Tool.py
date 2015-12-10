@@ -315,6 +315,19 @@ def constrain():
     wdsInterestingHere = wdsInterestingHere[np.argwhere(hereLimits)]
     
 
+def sortWdsInterestingHere(colName=raCoors):
+    '''
+        Sorts the wdsInterestingHere table based on a column.
+        The default column to sort by is the RA coordinates. 
+    '''
+    global wdsInterestingHere
+    
+    print(wdsInterestingHere)
+    print(colName)
+    wdsInterestingHere.sort(colName)
+    print(wdsInterestingHere)
+    
+
 def write(filename='object_list.txt'):
     '''
         Writes the contents of wdsInteresting to a file. 
@@ -362,10 +375,12 @@ def plotMagSep(catalog):
 
 #print(wdsMaster)
 #setTimeConstraints()
+#setLocationConstraints()
 #setStarConstraints()
 #constrain()
 #print(wdsInteresting)
 #print(wdsInterestingHere)
 ##write()
 #calcSiderealTime()
+#sortWdsInterestingHere()
 

@@ -246,6 +246,17 @@ def setTimeConstraints(startHA=190000.0, stopHA=240000.0, date=Time.now()):
     constraints['ra'] = (stopRA, startRA)
     
     
+def setLocationConstraints(latitude=340000.0, viewWidth=350000.0):#northDec=(340000.0 + 350000.0), southDec=(340000.0 - 350000.0)):
+    
+    # Limit the declination to within 3 h = 35 deg of overhead
+    # Using JPL's latitude, 34.2 deg = 34 deg
+    northDec = latitude + viewWidth
+    southDec = latitude - viewWidth
+    
+    # the north dec is the "upper bound", so it's first in the tuple
+    constraints['dec'] = (northDec, southDec)
+
+
 def constrain():
     '''
         Limits the WDS table to only stars that match our criteria.
@@ -292,7 +303,8 @@ def constrain():
     
     # Limit the declination to within 3 h = 35 deg of overhead
     # Using JPL's latitude, 34.2 deg = 34 deg
-    limits['dec'] = (wdsInteresting[decCoors] > (340000.0 - 350000.0)) & (wdsInteresting[decCoors] < (340000.0 + 350000.0))
+    limits['dec'] = (constraints['dec'][0] > wdsInteresting[decCoors]) & (wdsInteresting[decCoors] > constraints['dec'][1])
+    #limits['dec'] = (wdsInteresting[decCoors] > (340000.0 - 350000.0)) & (wdsInteresting[decCoors] < (340000.0 + 350000.0))
     
     # Combine all the limits together to get the full limits
     generalLimits = limits['separation'] & limits['magnitude'] & limits['delta magnitude']

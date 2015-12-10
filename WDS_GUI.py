@@ -27,11 +27,9 @@ class HelloWorld:
         # Date
         # the format of rawDate is a tuple, (year, month, day)
         rawDate = self.calendar.get_date()
-        print(rawDate)
         # note that for some reason the months go from 0 to 11 rather than 1 to 12
         dateString = str(rawDate[0]) + '-' + str(rawDate[1]+1) + '-' + str(rawDate[2]) + ' 00:00:00'
         astroDate = Time(dateString, format='iso', scale='utc')
-        print(astroDate)
         
         # Hour Angle start and stop
         
@@ -64,6 +62,7 @@ class HelloWorld:
         
         # Apply the user inputs as the constraints
         wdsExtractor.setTimeConstraints(startHA=startHAInput, stopHA=stopHAInput, date=astroDate)
+        wdsExtractor.setLocationConstraints()
         wdsExtractor.setStarConstraints(separation=separationInput, magnitude=magnitudeInput, deltaMag=deltaMagInput)
         
         # Constrain the wds table

@@ -163,15 +163,18 @@ def calcDeltaMags():
     return Delta_mag
 
 
-# TODO This doesn't work yet
 def calcSiderealAdjustment(longitude=-117, time=Time.now()):
     '''
-        Calculate the sidereal time for a specific time and place. 
+        Calculate the sidereal adjustmet time for a specific time and place. 
         By default calculates for the current time at longitude -117.
+        The sidereal adjustment time is the difference between 
+        the RA of a star and the HA of it on that day.  
         
-        This function cannot work until 
+        This function cannot fulll  work until 
         https://github.com/astropy/astropy/issues/3275
         has been resolved. 
+        For now, the function approximates future sidereal
+        times by adjusting by 4 minutes each day. 
     ''' 
     
     # Sidereal time on Nov 26, 2015 at 0-oclock is 4:16:00 ish 
@@ -214,9 +217,6 @@ def setStarConstraints(separation=(2.0, 0.5), magnitude=(7.0, -10.0), deltaMag=(
     constraints['delta magnitude'] = deltaMag
     
 
-# TODO replace sidereal adjustment parameter with an actual calculation for it 
-# Depends on the sidereal time github issue being fixed
-
 # The default inputs are currently specific to the 2015 Oct 15 observation date 
 # On this date the sidereal time will be about 1.6 h ahead of earth time
 # Uses the global constrain var to determine how the wds table is constrained
@@ -224,7 +224,8 @@ def setTimeConstraints(startHA=190000.0, stopHA=240000.0, date=Time.now()):#side
     '''
         Set the upper and lower bounds for the constraints which 
         are relevant to viewing time. (Does not constrain the wds list.)
-        Takes floats for startHA, stopHA, and siderealAdjust. 
+        Takes floats for startHA, stopHA. Takes an astropy Time object 
+        for the date.  
     '''
     global constraints
     

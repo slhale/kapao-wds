@@ -54,6 +54,32 @@ class HelloWorld:
             stopHAInput  = hhmmss[0]*10000 + hhmmss[1]*100 + hhmmss[2]
         else:
             stopHAInput = float(self.stopHAInput.get_text())
+       
+         
+        # Location (dec) constraints
+        
+        # Check if the input format is colon-separated 
+        if ":" in self.northDecInput.get_text():
+            # split the string at the colons
+            decmmss = self.northDecInput.get_text().split(":")
+            # and convert each of the resulting numbers to a float
+            decmmss = [float(i) for i in decmmss]
+            # Then merge them back together as a single decmmss float
+            northDecInput = decmmss[0]*10000 + decmmss[1]*100 + decmmss[2]
+        else:
+            northDecInput = float(self.northDecInput.get_text())
+        
+        # Check if the input format is colon-separated 
+        if ":" in self.southDecInput.get_text():
+            # split the string at the colons
+            decmmss = self.southDecInput.get_text().split(":")
+            # and convert each of the resulting numbers to a float
+            decmmss = [float(i) for i in decmmss]
+            # Then merge them back together as a single decmmss float
+            southDecInput = decmmss[0]*10000 + decmmss[1]*100 + decmmss[2]
+        else:
+            southDecInput = float(self.southDecInput.get_text())
+        
         
         # star contraints
         separationInput = (float(self.upperSeparationInput.get_text()), float(self.lowerSeparationInput.get_text()))
@@ -151,10 +177,48 @@ class HelloWorld:
         
         ### Now let's put things into the table
         
+        ######## LOCATION CONSTRAINTS
+        
+        # Make title for location constraints section 
+        self.locationConstrainLabel = gtk.Label("Location constraints:  (deg:min:sec)")
+        
+        # Attach it to the top row of the table
+        self.inputsTable.attach(self.locationConstrainLabel, left_attach=4, right_attach=5, top_attach=0, bottom_attach=1)
+        self.locationConstrainLabel.show()
+        
+        
+        # Make subtitles for the start and stop hour angle fields
+        self.northDecLabel = gtk.Label("Dec, upper")
+        self.southDecLabel = gtk.Label("Dec, lower")
+        
+        # Attach them to the 2nd row of the table
+        self.inputsTable.attach(self.northDecLabel, left_attach=4, right_attach=5, top_attach=1, bottom_attach=2)
+        self.northDecLabel.show()
+        self.inputsTable.attach(self.southDecLabel, left_attach=5, right_attach=6, top_attach=1, bottom_attach=2)
+        self.southDecLabel.show()
+        
+        
+        # Make time input fields for the user 
+        # They start out with default values 
+        self.northDecInput = gtk.Entry()
+        self.northDecInput.set_text("69:00:00.0")
+        self.southDecInput = gtk.Entry()
+        self.southDecInput.set_text("-1:00:00.0")
+        
+        # Set the width of the entry fields 
+        #self.startHAInput.set_width_chars(8)
+        
+        # Attach them to the 3rd row of the table
+        self.inputsTable.attach(self.northDecInput, left_attach=4, right_attach=5, top_attach=2, bottom_attach=3)
+        self.northDecInput.show()
+        self.inputsTable.attach(self.southDecInput, left_attach=5, right_attach=6, top_attach=2, bottom_attach=3)
+        self.southDecInput.show()
+        
+        
         ######## TIME CONSTRAINTS
         
         # Make title for time constraints section 
-        self.timeConstrainLabel = gtk.Label("Time constraints:")
+        self.timeConstrainLabel = gtk.Label("Time constraints:  (hour:min:sec)")
         
         # Attach it to the top row of the table
         self.inputsTable.attach(self.timeConstrainLabel, left_attach=0, right_attach=1, top_attach=0, bottom_attach=1)

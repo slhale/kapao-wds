@@ -164,9 +164,9 @@ class HelloWorld:
         # Make time input fields for the user 
         # They start out with default values 
         self.startHAInput = gtk.Entry()
-        self.startHAInput.set_text("180000.0")
+        self.startHAInput.set_text("18:00:00.0")
         self.stopHAInput = gtk.Entry()
-        self.stopHAInput.set_text("240000.0")
+        self.stopHAInput.set_text("24:00:00.0")
         
         # Set the width of the entry fields 
         self.startHAInput.set_width_chars(8)

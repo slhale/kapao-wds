@@ -183,11 +183,16 @@ def calcSiderealAdjustment(longitude=-117, time=Time.now()):
     elapsedDays = time - startTime # float of days 
     adjustment = float(str(elapsedDays)) * 4 # in minutes
     
+    # if the adjustment is greater than 24 h = 1440 min, then we need to 'wrap around'
+    adjustment = adjustment % 1440
+    #while adjustment >= 1440:
+    #    adjustment = adjustment - 1440    
+
     # if the adjustment is greater than 60, then we need to account for this when 
     # converting into hhmmss
     hours = 0
     mins = adjustment
-    while adjustment >= 60:
+    while mins >= 60:
         mins = mins - 60
         hours = hours + 1
         
@@ -341,7 +346,7 @@ def plotMagSep(catalog):
     plt.savefig('Sep_v_Mag_extracted.png', format='png',dpi=1000)
 
 #print(wdsMaster)
-setTimeConstraints()
+#setTimeConstraints()
 #setStarConstraints()
 #constrain()
 #print(wdsInteresting)

@@ -6,6 +6,7 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 import pango
+from astropy.time import Time
 import WDS_Extraction_Tool as wdsExtractor
 
 class HelloWorld:
@@ -24,8 +25,14 @@ class HelloWorld:
         # Time constraints
         
         # Date
-        print(self.calendar.get_date())
-
+        # the format of rawDate is a tuple, (year, month, day)
+        rawDate = self.calendar.get_date()
+        print(rawDate)
+        # note that for some reason the months go from 0 to 11 rather than 1 to 12
+        dateString = str(rawDate[0]) + '-' + str(rawDate[1]+1) + '-' + str(rawDate[2]) + ' 00:00:00'
+        astroDate = Time(dateString, format='iso', scale='utc')
+        print(astroDate)
+        
         # Hour Angle start and stop
         
         # Check if the input format is colon-separated 
@@ -56,7 +63,7 @@ class HelloWorld:
         deltaMagInput = (float(self.upperDeltaMagInput.get_text()), float(self.lowerDeltaMagInput.get_text()))
         
         # Apply the user inputs as the constraints
-        wdsExtractor.setTimeConstraints(startHA=startHAInput, stopHA=stopHAInput)
+        wdsExtractor.setTimeConstraints(startHA=startHAInput, stopHA=stopHAInput, date=astroDate)
         wdsExtractor.setStarConstraints(separation=separationInput, magnitude=magnitudeInput, deltaMag=deltaMagInput)
         
         # Constrain the wds table

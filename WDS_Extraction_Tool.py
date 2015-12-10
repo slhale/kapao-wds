@@ -180,7 +180,7 @@ def calcSiderealAdjustment(longitude=-117, time=Time.now()):
     
     # Sidereal time on Nov 26, 2015 at 0-oclock is 4:16:00 ish 
     startTime = Time('2015-11-26 00:00:00', scale='utc')
-    startSidereal = 041600.0 #'04:16:00'
+    startSidereal = 041600.0 # hhmmss '04:16:00'
     
     # If the sidereal time we are trying to calculate is after this, then we can 
     # calculate it by adjusting the sidereal time by 4 minutes for each day after
@@ -189,8 +189,6 @@ def calcSiderealAdjustment(longitude=-117, time=Time.now()):
     
     # if the adjustment is greater than 24 h = 1440 min, then we need to 'wrap around'
     adjustment = adjustment % 1440
-    #while adjustment >= 1440:
-    #    adjustment = adjustment - 1440    
 
     # if the adjustment is greater than 60, then we need to account for this when 
     # converting into hhmmss
@@ -218,10 +216,7 @@ def setStarConstraints(separation=(2.0, 0.5), magnitude=(7.0, -10.0), deltaMag=(
     constraints['delta magnitude'] = deltaMag
     
 
-# The default inputs are currently specific to the 2015 Oct 15 observation date 
-# On this date the sidereal time will be about 1.6 h ahead of earth time
-# Uses the global constrain var to determine how the wds table is constrained
-def setTimeConstraints(startHA=190000.0, stopHA=240000.0, date=Time.now()):#siderealAdjust=13000.0):
+def setTimeConstraints(startHA=190000.0, stopHA=240000.0, date=Time.now()):
     '''
         Set the upper and lower bounds for the constraints which 
         are relevant to viewing time. (Does not constrain the wds list.)

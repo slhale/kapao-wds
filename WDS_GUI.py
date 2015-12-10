@@ -22,8 +22,29 @@ class HelloWorld:
         
         # Get the inputs from the user entry fields 
         # time constraints
-        startHAInput = float(self.startHAInput.get_text())
-        stopHAInput = float(self.stopHAInput.get_text())
+        
+        # Check if the input format is colon-separated 
+        if ":" in self.startHAInput.get_text():
+            # split the string at the colons
+            hhmmss = self.startHAInput.get_text().split(":")
+            # and convert each of the resulting numbers to a float
+            hhmmss = [float(i) for i in hhmmss]
+            # Then merge them back together as a single hhmmss float
+            startHAInput = hhmmss[0]*10000 + hhmmss[1]*100 + hhmmss[2]
+        else:
+            startHAInput = float(self.startHAInput.get_text())
+        
+        # Check if the input format is colon-separated 
+        if ":" in self.stopHAInput.get_text():
+            # split the string at the colons
+            hhmmss = self.stopHAInput.get_text().split(":")
+            # and convert each of the resulting numbers to a float
+            hhmmss = [float(i) for i in hhmmss]
+            # Then merge them back together as a single hhmmss float
+            stopHAInput  = hhmmss[0]*10000 + hhmmss[1]*100 + hhmmss[2]
+        else:
+            stopHAInput = float(self.stopHAInput.get_text())
+        
         # star contraints
         separationInput = (float(self.upperSeparationInput.get_text()), float(self.lowerSeparationInput.get_text()))
         magnitudeInput = (float(self.upperMagnitudeInput.get_text()), float(self.lowerMagnitudeInput.get_text()))

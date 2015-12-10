@@ -65,9 +65,6 @@ wdsMaster = astropy.io.ascii.read('WDS_CSV_cat.txt',
                 delimiter =',',guess=False, Reader =ascii.NoHeader,
                 fill_values=[('.', '-999'), ('', '-999')])
 wdsMaster = formatWds(wdsMaster)
-#oldwdsMaster = astropy.io.ascii.read('WDS_CSV_cat_1-24_FIN2.txt', #'WDS_CSV_cat.txt', 
-#                delimiter =',',guess=False, Reader =ascii.NoHeader,
-#                fill_values=[('.', '-999'), ('', '-999')])
 # Create the sub-catalog we want (to be narrowed down by constrain function)
 wdsInteresting = wdsMaster
 # Create sub-sub catalog which has the interesting stars that we can view
@@ -75,40 +72,6 @@ wdsInterestingHere = wdsInteresting
 
 # Associate each row with its type
 # e.g. Using wdsMaster[numObjs] is equiv to wdsMaster['col2']
-oldCols = """
-discovererAndNumber = 'col1'
-numObjs = 'col2'
-posAngleFirst = 'col3'
-posAngleLast = 'col4'
-sepFirst = 'col5'
-sepLast = 'col6'
-priMag = 'col7'
-secMag = 'col8'
-spectralType = 'col9'
-priRaProperMotion = 'col10'
-priDecProperMotion = 'col11'
-raCoors = 'col14'
-decCoors = 'col15'
-#"""
-##################################### TODO Implement use of other WDS later
-newCols = """
-discovererAndNumber = 'col2'
-numObjs = 'col3'
-posAngleFirst = 'col7'
-posAngleLast = 'col8'
-sepFirst = 'col9'
-sepLast = 'col10'
-priMag = 'col11'
-secMag = 'col12'
-spectralType = 'col13'
-priRaProperMotion = 'col14'
-priDecProperMotion = 'col15'
-#raCoors = 'col20'## NOPE radec is on 21, need to parse to get each
-#decCoors = 'col21'
-radec = 'col21'
-raCoors = 'RA'
-decCoors = 'Dec'
-"""
 
 # Make this strings be variables so we can more easily change
 # how the string names look without changing everything else
@@ -138,6 +101,7 @@ wdsMaster['col12'].name = secMag
 wdsMaster['col13'].name = spectralType
 wdsMaster['col14'].name = priRaProperMotion
 wdsMaster['col15'].name = priDecProperMotion
+
 
 # Constriant parameters
 # Constraints is the actual numbers -- upper and lower bounds for

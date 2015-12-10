@@ -59,26 +59,26 @@ class HelloWorld:
         # Location (dec) constraints
         
         # Check if the input format is colon-separated 
-        if ":" in self.northDecInput.get_text():
+        if ":" in self.latitudeInput.get_text():
             # split the string at the colons
-            decmmss = self.northDecInput.get_text().split(":")
+            decmmss = self.latitudeInput.get_text().split(":")
             # and convert each of the resulting numbers to a float
             decmmss = [float(i) for i in decmmss]
             # Then merge them back together as a single decmmss float
-            northDecInput = decmmss[0]*10000 + decmmss[1]*100 + decmmss[2]
+            latitudeInput = decmmss[0]*10000 + decmmss[1]*100 + decmmss[2]
         else:
-            northDecInput = float(self.northDecInput.get_text())
+            latitudeInput = float(self.latitudeInput.get_text())
         
         # Check if the input format is colon-separated 
-        if ":" in self.southDecInput.get_text():
+        if ":" in self.decWidthInput.get_text():
             # split the string at the colons
-            decmmss = self.southDecInput.get_text().split(":")
+            decmmss = self.decWidthInput.get_text().split(":")
             # and convert each of the resulting numbers to a float
             decmmss = [float(i) for i in decmmss]
             # Then merge them back together as a single decmmss float
-            southDecInput = decmmss[0]*10000 + decmmss[1]*100 + decmmss[2]
+            decWidthInput = decmmss[0]*10000 + decmmss[1]*100 + decmmss[2]
         else:
-            southDecInput = float(self.southDecInput.get_text())
+            decWidthInput = float(self.decWidthInput.get_text())
         
         
         # star contraints
@@ -88,7 +88,7 @@ class HelloWorld:
         
         # Apply the user inputs as the constraints
         wdsExtractor.setTimeConstraints(startHA=startHAInput, stopHA=stopHAInput, date=astroDate)
-        wdsExtractor.setLocationConstraints()
+        wdsExtractor.setLocationConstraints(latitude=latitudeInput, viewWidth=decWidthInput)
         wdsExtractor.setStarConstraints(separation=separationInput, magnitude=magnitudeInput, deltaMag=deltaMagInput)
         
         # Constrain the wds table
@@ -188,31 +188,31 @@ class HelloWorld:
         
         
         # Make subtitles for the start and stop hour angle fields
-        self.northDecLabel = gtk.Label("Dec, upper")
-        self.southDecLabel = gtk.Label("Dec, lower")
+        self.latitudeLabel = gtk.Label("Local latitude ")
+        self.decWidthLabel = gtk.Label("Dec view range ")
         
         # Attach them to the 2nd row of the table
-        self.inputsTable.attach(self.northDecLabel, left_attach=4, right_attach=5, top_attach=1, bottom_attach=2)
-        self.northDecLabel.show()
-        self.inputsTable.attach(self.southDecLabel, left_attach=5, right_attach=6, top_attach=1, bottom_attach=2)
-        self.southDecLabel.show()
+        self.inputsTable.attach(self.latitudeLabel, left_attach=4, right_attach=5, top_attach=1, bottom_attach=2)
+        self.latitudeLabel.show()
+        self.inputsTable.attach(self.decWidthLabel, left_attach=5, right_attach=6, top_attach=1, bottom_attach=2)
+        self.decWidthLabel.show()
         
         
         # Make time input fields for the user 
         # They start out with default values 
-        self.northDecInput = gtk.Entry()
-        self.northDecInput.set_text("69:00:00.0")
-        self.southDecInput = gtk.Entry()
-        self.southDecInput.set_text("-1:00:00.0")
+        self.latitudeInput = gtk.Entry()
+        self.latitudeInput.set_text("34:00:00.0")
+        self.decWidthInput = gtk.Entry()
+        self.decWidthInput.set_text("35:00:00.0")
         
         # Set the width of the entry fields 
         #self.startHAInput.set_width_chars(8)
         
         # Attach them to the 3rd row of the table
-        self.inputsTable.attach(self.northDecInput, left_attach=4, right_attach=5, top_attach=2, bottom_attach=3)
-        self.northDecInput.show()
-        self.inputsTable.attach(self.southDecInput, left_attach=5, right_attach=6, top_attach=2, bottom_attach=3)
-        self.southDecInput.show()
+        self.inputsTable.attach(self.latitudeInput, left_attach=4, right_attach=5, top_attach=2, bottom_attach=3)
+        self.latitudeInput.show()
+        self.inputsTable.attach(self.decWidthInput, left_attach=5, right_attach=6, top_attach=2, bottom_attach=3)
+        self.decWidthInput.show()
         
         
         ######## TIME CONSTRAINTS

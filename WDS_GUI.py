@@ -29,7 +29,7 @@ class HelloWorld:
         rawDate = self.calendar.get_date()
         # note that for some reason the months go from 0 to 11 rather than 1 to 12
         dateString = str(rawDate[0]) + '-' + str(rawDate[1]+1) + '-' + str(rawDate[2]) + ' 00:00:00'
-        astroDate = Time(dateString, format='iso', scale='utc')
+        astroDateInput = Time(dateString, format='iso', scale='utc')
         
         # Hour Angle start and stop
         
@@ -87,7 +87,7 @@ class HelloWorld:
         deltaMagInput = (float(self.upperDeltaMagInput.get_text()), float(self.lowerDeltaMagInput.get_text()))
         
         # Apply the user inputs as the constraints
-        wdsExtractor.setTimeConstraints(startHA=startHAInput, stopHA=stopHAInput, date=astroDate)
+        wdsExtractor.setTimeConstraints(startHA=startHAInput, stopHA=stopHAInput, date=astroDateInput)
         wdsExtractor.setLocationConstraints(latitude=latitudeInput, viewWidth=decWidthInput)
         wdsExtractor.setStarConstraints(separation=separationInput, magnitude=magnitudeInput, deltaMag=deltaMagInput)
         
@@ -96,7 +96,7 @@ class HelloWorld:
         
         # Display the new wds table
         #self.text.set_text(str(wdsExtractor.getWdsInterestingHere()))
-        self.text.set_text(str(wdsExtractor.getSmallerWdsInterestingHereString()))
+        self.text.set_text(wdsExtractor.getSmallerWdsInterestingHereString())
         
         
     def delete_event(self, widget, event, data=None):
@@ -183,7 +183,7 @@ class HelloWorld:
         self.locationConstrainLabel = gtk.Label("Location constraints:  (deg:min:sec)")
         
         # Attach it to the top row of the table
-        self.inputsTable.attach(self.locationConstrainLabel, left_attach=4, right_attach=5, top_attach=0, bottom_attach=1)
+        self.inputsTable.attach(self.locationConstrainLabel, left_attach=4, right_attach=6, top_attach=0, bottom_attach=1)
         self.locationConstrainLabel.show()
         
         
@@ -221,7 +221,7 @@ class HelloWorld:
         self.timeConstrainLabel = gtk.Label("Time constraints:  (hour:min:sec)")
         
         # Attach it to the top row of the table
-        self.inputsTable.attach(self.timeConstrainLabel, left_attach=0, right_attach=1, top_attach=0, bottom_attach=1)
+        self.inputsTable.attach(self.timeConstrainLabel, left_attach=0, right_attach=3, top_attach=0, bottom_attach=1)
         self.timeConstrainLabel.show()
         
         
@@ -259,14 +259,14 @@ class HelloWorld:
         self.calendarLabel = gtk.Label("Date of Observation")
         
         # Attach them to the 2nd row of the table
-        self.inputsTable.attach(self.calendarLabel, left_attach=3, right_attach=4, top_attach=1, bottom_attach=2)
+        self.inputsTable.attach(self.calendarLabel, left_attach=2, right_attach=4, top_attach=1, bottom_attach=2)
         self.calendarLabel.show()
 
         # Make the calendar to get the date of the observation
         self.calendar = gtk.Calendar()
 
         # Attach it to the end of the 3rd row of the table
-        self.inputsTable.attach(self.calendar, left_attach=3, right_attach=4, top_attach=2, bottom_attach=3)
+        self.inputsTable.attach(self.calendar, left_attach=2, right_attach=4, top_attach=2, bottom_attach=3)
         self.calendar.show() 
         
         

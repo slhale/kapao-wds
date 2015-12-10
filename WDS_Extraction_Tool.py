@@ -209,19 +209,21 @@ def calcSiderealTime(longitude=-117, time=Time.now()):
     # calculate it by adjusting the sidereal time by 4 minutes for each day after
     elapsedDays = time - startTime # float of days 
     adjustment = float(str(elapsedDays)) * 4 # in minutes
-    print(elapsedDays)
-    print(float(str(elapsedDays)))
+    #print(elapsedDays)
+    #print(float(str(elapsedDays)))
     # if the adjustment is greater than 60, then we need to account for this when 
     # converting into hhmmss
     hours = 0
     mins = adjustment
-    if adjustment >= 60:
-        hours
+    while adjustment >= 60:
+        mins = mins - 60
+        hours = hours + 1
         
     sidereal = startSidereal + mins*100 + hours*10000
-    print(mins)
-    print(hours)
-    print(sidereal)
+    #print(mins)
+    #print(hours)
+    #print(sidereal)
+    return sidereal
     
 def setStarConstraints(separation=(2.0, 0.5), magnitude=(7.0, -10.0), deltaMag=(2.0, -2.0)):
     '''

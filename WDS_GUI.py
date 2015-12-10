@@ -58,7 +58,8 @@ class HelloWorld:
         wdsExtractor.constrain()
         
         # Display the new wds table
-        self.text.set_text(str(wdsExtractor.getWdsInterestingHere()))
+        #self.text.set_text(str(wdsExtractor.getWdsInterestingHere()))
+        self.text.set_text(str(wdsExtractor.getSmallerWdsInterestingHereString()))
         
         
     def delete_event(self, widget, event, data=None):

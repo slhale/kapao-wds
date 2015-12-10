@@ -113,16 +113,16 @@ decCoors = 'Dec'
 # Make this strings be variables so we can more easily change
 # how the string names look without changing everything else
 discovererAndNumber = 'Name'
-numObjs = 'Num Objs'
-posAngleFirst = 'Pos Angl First'
-posAngleLast = 'Pos Angl Last'
-sepFirst = 'Sep First'
-sepLast = 'Sep Last'
-priMag = 'Pri Mag'
-secMag = 'Sec Mag'
-spectralType = 'Spec Type'
-priRaProperMotion = 'Pri RA Prop Motion'
-priDecProperMotion = 'Pri Dec Prop Motion'
+numObjs = 'NumObjs'
+posAngleFirst = 'PosAnglFrst'
+posAngleLast = 'PosAnglLst'
+sepFirst = 'SepFirst'
+sepLast = 'SepLast'
+priMag = 'PriMag'
+secMag = 'SecMag'
+spectralType = 'SpecType'
+priRaProperMotion = 'PriRAPropMotion'
+priDecProperMotion = 'PriDecPropMotion'
 raCoors = 'RA'
 decCoors = 'Dec'
 
@@ -166,6 +166,22 @@ def getWdsMaster():
     '''
     global wdsMaster
     return wdsMaster
+
+
+def getSmallerWdsInterestingHereString():
+    '''
+        Gets a string of the  WDS table constrained to what stars 
+        are both interesting and viewable. Returns only the columns with 
+        specified names. (Those are assumed to be the columns of
+        interest.) 
+    '''
+    global wdsInterestingHere
+    
+    # Not including numObjs because it doesn't seem to have much in it
+    return str(wdsInterestingHere[discovererAndNumber,  posAngleFirst, posAngleLast, 
+                                    sepFirst, sepLast, priMag, secMag, spectralType, 
+                                    priRaProperMotion, priDecProperMotion, raCoors, decCoors])
+
 
 def calcDeltaMags():
     '''

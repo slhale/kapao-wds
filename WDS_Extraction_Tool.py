@@ -24,6 +24,7 @@ import matplotlib.cm as cm
 from astropy.time import Time
 import re
 
+# This funtion needs to be up here so it can be called during 'setup'
 def formatWds(wds):
     '''
         Converts the combined RADec column of the WDS master table to 
@@ -239,6 +240,12 @@ def setTimeConstraints(startHA=190000.0, stopHA=240000.0, date=Time.now()):#side
         startRA = startRA - 240000.0
     if stopRA > 240000.0:
         stopRA = stopRA - 240000.0
+    
+    # If the inputs are negative, also roll over those 
+    if startRA < 0:
+        startRA = 240000.0 + startRA
+    if stopRA < 0:
+        stopRA = 240000.0 + stopRA
     
     # the stop time is the "upper bound", so it's first in the tuple
     constraints['ra'] = (stopRA, startRA)

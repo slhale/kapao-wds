@@ -190,7 +190,7 @@ class HelloWorld:
         
         # Make subtitles for the star options
         self.separationLabel = gtk.Label("Separation")
-        self.magnitudeLabel = gtk.Label("Magnitude")
+        self.magnitudeLabel = gtk.Label("Primary Magnitude")
         self.deltaMagLabel = gtk.Label("Delta Magnitude")
         
         # Attach them to the 5th row of the table

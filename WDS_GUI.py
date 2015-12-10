@@ -21,7 +21,12 @@ class HelloWorld:
         '''
         
         # Get the inputs from the user entry fields 
-        # time constraints
+        # Time constraints
+        
+        # Date
+        print(self.calendar.get_date())
+
+        # Hour Angle start and stop
         
         # Check if the input format is colon-separated 
         if ":" in self.startHAInput.get_text():
@@ -176,6 +181,23 @@ class HelloWorld:
         self.startHAInput.show()
         self.inputsTable.attach(self.stopHAInput, left_attach=1, right_attach=2, top_attach=2, bottom_attach=3)
         self.stopHAInput.show()
+        
+        
+        ######## CALENDAR
+        
+        # Make label for the calendar
+        self.calendarLabel = gtk.Label("Date of Observation")
+        
+        # Attach them to the 2nd row of the table
+        self.inputsTable.attach(self.calendarLabel, left_attach=3, right_attach=4, top_attach=1, bottom_attach=2)
+        self.calendarLabel.show()
+
+        # Make the calendar to get the date of the observation
+        self.calendar = gtk.Calendar()
+
+        # Attach it to the end of the 3rd row of the table
+        self.inputsTable.attach(self.calendar, left_attach=3, right_attach=4, top_attach=2, bottom_attach=3)
+        self.calendar.show() 
         
         
         ######## STAR CONSTRAINTS

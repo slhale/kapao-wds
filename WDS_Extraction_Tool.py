@@ -247,6 +247,12 @@ def setTimeConstraints(startHA=190000.0, stopHA=240000.0, date=Time.now()):
     
     
 def setLocationConstraints(latitude=340000.0, viewWidth=350000.0):#northDec=(340000.0 + 350000.0), southDec=(340000.0 - 350000.0)):
+    '''
+        Set the upper and lower bounds for the constraints which 
+        are relevant to viewing location. (Does not constrain the wds list.)
+        Takes floats for laitude and viewWidth. Both are in deg:min:sec format. 
+        The videWidth is how much +- you want to give to the laitude for stars.
+    '''
     
     # Limit the declination to within 3 h = 35 deg of overhead
     # Using JPL's latitude, 34.2 deg = 34 deg

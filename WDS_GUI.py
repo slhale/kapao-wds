@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-# example helloworld.py
-
 import pygtk
 pygtk.require('2.0')
 import gtk
@@ -9,7 +7,7 @@ import pango
 from astropy.time import Time
 import WDS_Extraction_Tool as wdsExtractor
 
-class HelloWorld:
+class WDSGUI:
     
     def constrain(self, widget, data=None):
         '''
@@ -389,6 +387,6 @@ class HelloWorld:
 # If the program is run directly or passed as an argument to the python
 # interpreter then create a HelloWorld instance and show it
 if __name__ == "__main__":
-    hello = HelloWorld()
+    hello = WDSGUI()
     hello.main()
 

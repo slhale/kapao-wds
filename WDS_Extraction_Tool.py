@@ -132,6 +132,16 @@ def getWdsMaster():
     global wdsMaster
     return wdsMaster
 
+def tableToString(table):
+    string = ''
+    rows = len(table.columns[1])
+    colnames = table.colnames
+    for row in range(rows):
+        rowstring = ''
+        for colname in colnames:
+            rowstring = rowstring + '   ' + str(table[row][colname])
+        string = string + "\n" + rowstring
+    return string
 
 def getSmallerWdsInterestingHereString():
     '''
@@ -143,9 +153,12 @@ def getSmallerWdsInterestingHereString():
     global wdsInterestingHere
     
     # Not including numObjs because it doesn't seem to have much in it
-    return str(wdsInterestingHere[discovererAndNumber,  posAngleFirst, posAngleLast, 
+    return tableToString(wdsInterestingHere[discovererAndNumber,  posAngleFirst, posAngleLast, 
                                     sepFirst, sepLast, priMag, secMag, spectralType, 
-                                    priRaProperMotion, priDecProperMotion, raCoors, decCoors])
+                                    priRaProperMotion, priDecProperMotion, raCoors, decCoors])#.pprint())
+#    return str(wdsInterestingHere[discovererAndNumber,  posAngleFirst, posAngleLast, 
+#                                    sepFirst, sepLast, priMag, secMag, spectralType, 
+#                                    priRaProperMotion, priDecProperMotion, raCoors, decCoors])
 
 
 def calcDeltaMags():
@@ -344,3 +357,9 @@ def write(filename='object_list.txt'):
     log = open(filename, "w")
     print(wdsInteresting, file = log)
 
+print(wdsInterestingHere.columns)
+#print(wdsInterestingHere[1]['values'])
+#print(len(wdsInterestingHere[1]['values']))
+print(len(wdsInterestingHere[1]))
+print(len(wdsInterestingHere.columns[1]))
+print(wdsInterestingHere[1])

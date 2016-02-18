@@ -132,29 +132,49 @@ def getWdsMaster():
     global wdsMaster
     return wdsMaster
 
-def tableToString(table):
+def tableToString(table, colWidth = 20):
     '''
         Takes an astropy table and converts the table to a string.
+        Also optionally takes the width of the column colWidth in 
+        characters; the default value for this is 20.
         This is different from simply casting the table to a string 
         because it ensures that all of the columns are displayed. 
     '''
-    string = ''
+    
+    # Number of rows in the table (excluding column names)
     rows = len(table.columns[1])
-    colnames = table.colnames
+    # List of the names of each column 
+    colNames = table.colnames
+    
+    # The string that will store the whole table
+    string = ''
+    
+    # Keep track of the length of the last word so the column width
+    # stays uniform
+    lastWordLen = colWidth
     
     # Write the names of the columns to the string 
-    for colname in colnames:
-            string = string + 5*' ' + str(colname)
+    for colName in colNames:
+            string = string + (colWidth - lastWordLen)*' ' + str(colName)
+            lastWordLen = len(colName)
+    
+    # Add a horizontal bar to separate the titles from the data a bit
+    string = string + '\n' + len(string)*'-' + (colWidth - lastWordLen)*'-'
     
     # Loop over all of the elements of the table 
-    row = 0
     for row in range(rows):
+        lastWordLen = colWidth
         rowstring = ''
         # Write all the data in a row to a string 
-        for colname in colnames:
-            rowstring = rowstring + 5*' ' + str(table[row][colname])
+        for colName in colNames:
+            data = str(table[row][colName])
+            # Remove the first and last characters from the string because 
+            # they are just brackets 
+            data = data[1:-1]
+            rowstring = rowstring + (colWidth - lastWordLen)*' ' + data
+            lastWordLen = len(data)
         # Then add that string as a new line to the full table's string 
-        string = string + "\n" + rowstring
+        string = string + '\n' + rowstring
     
     return string
 

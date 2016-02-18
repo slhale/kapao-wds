@@ -18,7 +18,7 @@ np.set_printoptions(threshold='nan')
 import pickle
 from collections import Counter 
 from astropy import units as u
-from astropy.coordinates import SkyCoord
+#from astropy.coordinates import SkyCoord
 #import matplotlib.cm as cm
 #imports added by Sarah
 from astropy.time import Time
@@ -133,14 +133,29 @@ def getWdsMaster():
     return wdsMaster
 
 def tableToString(table):
+    '''
+        Takes an astropy table and converts the table to a string.
+        This is different from simply casting the table to a string 
+        because it ensures that all of the columns are displayed. 
+    '''
     string = ''
     rows = len(table.columns[1])
     colnames = table.colnames
+    
+    # Write the names of the columns to the string 
+    for colname in colnames:
+            string = string + 5*' ' + str(colname)
+    
+    # Loop over all of the elements of the table 
+    row = 0
     for row in range(rows):
         rowstring = ''
+        # Write all the data in a row to a string 
         for colname in colnames:
-            rowstring = rowstring + '   ' + str(table[row][colname])
+            rowstring = rowstring + 5*' ' + str(table[row][colname])
+        # Then add that string as a new line to the full table's string 
         string = string + "\n" + rowstring
+    
     return string
 
 def getSmallerWdsInterestingHereString():
@@ -357,9 +372,4 @@ def write(filename='object_list.txt'):
     log = open(filename, "w")
     print(wdsInteresting, file = log)
 
-print(wdsInterestingHere.columns)
-#print(wdsInterestingHere[1]['values'])
-#print(len(wdsInterestingHere[1]['values']))
-print(len(wdsInterestingHere[1]))
-print(len(wdsInterestingHere.columns[1]))
-print(wdsInterestingHere[1])
+

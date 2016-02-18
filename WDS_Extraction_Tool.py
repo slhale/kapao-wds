@@ -190,10 +190,7 @@ def getSmallerWdsInterestingHereString():
     # Not including numObjs because it doesn't seem to have much in it
     return tableToString(wdsInterestingHere[discovererAndNumber,  posAngleFirst, posAngleLast, 
                                     sepFirst, sepLast, priMag, secMag, spectralType, 
-                                    priRaProperMotion, priDecProperMotion, raCoors, decCoors])#.pprint())
-#    return str(wdsInterestingHere[discovererAndNumber,  posAngleFirst, posAngleLast, 
-#                                    sepFirst, sepLast, priMag, secMag, spectralType, 
-#                                    priRaProperMotion, priDecProperMotion, raCoors, decCoors])
+                                    priRaProperMotion, priDecProperMotion, raCoors, decCoors])
 
 
 def calcDeltaMags():

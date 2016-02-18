@@ -1,8 +1,16 @@
+#!/usr/bin/env python
+
+####################################
+# File name: WDS_Extraction_Tool.py
+# Author: Sarah Hale
+# Email: shale@hmc.edu
+# Date last modified: 2016-02-18
+# Python Version: 2.7
+####################################
 
 # import the python3 print function
 from __future__ import print_function
 
-#imports
 import numpy as np
 from numpy import *
 import astropy

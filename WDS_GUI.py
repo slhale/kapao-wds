@@ -1,5 +1,13 @@
 #!/usr/bin/env python
 
+####################################
+# File name: WDS_GUI.py
+# Author: Sarah Hale
+# Email: shale@hmc.edu
+# Date last modified: 2016-02-18
+# Python Version: 2.7
+####################################
+
 import pygtk
 pygtk.require('2.0')
 import gtk

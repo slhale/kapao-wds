@@ -5,22 +5,13 @@ from __future__ import print_function
 #imports
 import numpy as np
 from numpy import *
-#import matplotlib.pyplot as plt
-#import matplotlib.colors as c
 import astropy
 from astropy.io import ascii
 from StringIO import StringIO
-#from matplotlib.colors import LogNorm
-#import pylab
-#from matplotlib.ticker import NullFormatter
 import numpy.ma as ma
 np.set_printoptions(threshold='nan')
-import pickle
 from collections import Counter 
 from astropy import units as u
-#from astropy.coordinates import SkyCoord
-#import matplotlib.cm as cm
-#imports added by Sarah
 from astropy.time import Time
 import re
 

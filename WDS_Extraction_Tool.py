@@ -177,7 +177,8 @@ def tableToString(table, colWidth = 20):
     
     return string
 
-def getSmallerWdsInterestingHereString():
+# Added by shale 2017-01-30: Same default colWidth as tableToString, but changeable
+def getSmallerWdsInterestingHereString(colWidth = 20):
     '''
         Gets a string of the  WDS table constrained to what stars 
         are both interesting and viewable. Returns only the columns with 
@@ -187,9 +188,11 @@ def getSmallerWdsInterestingHereString():
     global wdsInterestingHere
     
     # Not including numObjs because it doesn't seem to have much in it
-    return tableToString(wdsInterestingHere[discovererAndNumber,  posAngleFirst, posAngleLast, 
-                                    sepFirst, sepLast, priMag, secMag, spectralType, 
-                                    priRaProperMotion, priDecProperMotion, raCoors, decCoors])
+    # Shale 2017-02-06: Removing the position angles and proper motions.
+    #                   Also reordering list.
+    return tableToString(wdsInterestingHere[discovererAndNumber, raCoors, decCoors,
+                                    priMag, secMag, sepFirst, sepLast, spectralType],
+                                    colWidth) # Added by shale on 2017-01-30
 
 
 def calcDeltaMags():

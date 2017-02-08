@@ -50,27 +50,50 @@ class WDSGUI:
         # Hour Angle start and stop
         
         # Check if the input format is colon-separated 
-        if ":" in self.startHAInput.get_text():
+        if ":" in self.startTimeInput.get_text():
             # split the string at the colons
-            hhmmss = self.startHAInput.get_text().split(":")
+            hhmmss = self.startTimeInput.get_text().split(":")
             # and convert each of the resulting numbers to a float
             hhmmss = [float(i) for i in hhmmss]
             # Then merge them back together as a single hhmmss float
-            startHAInput = hhmmss[0]*10000 + hhmmss[1]*100 + hhmmss[2]
+            startTimeInput = hhmmss[0]*10000 + hhmmss[1]*100 + hhmmss[2]
         else:
-            startHAInput = float(self.startHAInput.get_text())
+            startTimeInput = float(self.startTimeInput.get_text())
+
+        if ":" in preferences['+HA']:
+            # split the string at the colons
+            hhmmss = preferences['+HA'].split(":")
+            # and convert each of the resulting numbers to a float
+            hhmmss = [float(i) for i in hhmmss]
+            # Then merge them back together as a single hhmmss float
+            eastHARange = hhmmss[0]*10000 + hhmmss[1]*100 + hhmmss[2]
+        else:
+            eastHARange = float(preferences['+HA'])
+
+        startHAInput = startTimeInput - eastHARange
         
         # Check if the input format is colon-separated 
-        if ":" in self.stopHAInput.get_text():
+        if ":" in self.stopTimeInput.get_text():
             # split the string at the colons
-            hhmmss = self.stopHAInput.get_text().split(":")
+            hhmmss = self.stopTimeInput.get_text().split(":")
             # and convert each of the resulting numbers to a float
             hhmmss = [float(i) for i in hhmmss]
             # Then merge them back together as a single hhmmss float
-            stopHAInput  = hhmmss[0]*10000 + hhmmss[1]*100 + hhmmss[2]
+            stopTimeInput  = hhmmss[0]*10000 + hhmmss[1]*100 + hhmmss[2]
         else:
-            stopHAInput = float(self.stopHAInput.get_text())
+            stopTimeInput = float(self.stopTimeInput.get_text())
        
+        if ":" in preferences['-HA']:
+            # split the string at the colons
+            hhmmss = preferences['-HA'].split(":")
+            # and convert each of the resulting numbers to a float
+            hhmmss = [float(i) for i in hhmmss]
+            # Then merge them back together as a single hhmmss float
+            westHARange = hhmmss[0]*10000 + hhmmss[1]*100 + hhmmss[2]
+        else:
+            westHARange = float(preferences['-HA'])
+
+        stopHAInput = stopTimeInput + westHARange
          
         # Location (dec) constraints
         
@@ -236,31 +259,31 @@ class WDSGUI:
         
         
         # Make subtitles for the start and stop hour angle fields
-        self.startHALabel = gtk.Label("Start HA")
-        self.stopHALabel = gtk.Label("Stop HA")
+        self.startTimeLabel = gtk.Label("Start Time")
+        self.stopTimeLabel = gtk.Label("Stop Time")
         
         # Attach them to the 2nd row of the table
-        self.inputsTable.attach(self.startHALabel, left_attach=0, right_attach=1, top_attach=1, bottom_attach=2)
-        self.startHALabel.show()
-        self.inputsTable.attach(self.stopHALabel, left_attach=1, right_attach=2, top_attach=1, bottom_attach=2)
-        self.stopHALabel.show()
+        self.inputsTable.attach(self.startTimeLabel, left_attach=0, right_attach=1, top_attach=1, bottom_attach=2)
+        self.startTimeLabel.show()
+        self.inputsTable.attach(self.stopTimeLabel, left_attach=1, right_attach=2, top_attach=1, bottom_attach=2)
+        self.stopTimeLabel.show()
         
         
         # Make time input fields for the user 
         # They start out with default values 
-        self.startHAInput = gtk.Entry()
-        self.startHAInput.set_text("18:00:00.0")
-        self.stopHAInput = gtk.Entry()
-        self.stopHAInput.set_text("24:00:00.0")
+        self.startTimeInput = gtk.Entry()
+        self.startTimeInput.set_text("18:00:00.0")
+        self.stopTimeInput = gtk.Entry()
+        self.stopTimeInput.set_text("24:00:00.0")
         
         # Set the width of the entry fields 
-        self.startHAInput.set_width_chars(8)
+        self.startTimeInput.set_width_chars(8)
         
         # Attach them to the 3rd row of the table
-        self.inputsTable.attach(self.startHAInput, left_attach=0, right_attach=1, top_attach=2, bottom_attach=3)
-        self.startHAInput.show()
-        self.inputsTable.attach(self.stopHAInput, left_attach=1, right_attach=2, top_attach=2, bottom_attach=3)
-        self.stopHAInput.show()
+        self.inputsTable.attach(self.startTimeInput, left_attach=0, right_attach=1, top_attach=2, bottom_attach=3)
+        self.startTimeInput.show()
+        self.inputsTable.attach(self.stopTimeInput, left_attach=1, right_attach=2, top_attach=2, bottom_attach=3)
+        self.stopTimeInput.show()
         
         
         ######## CALENDAR

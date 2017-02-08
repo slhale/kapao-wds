@@ -114,7 +114,11 @@ class WDSGUI:
         
         # Display the new wds table
         #self.text.set_text(str(wdsExtractor.getWdsInterestingHere()))
-        self.text.set_text(wdsExtractor.getSmallerWdsInterestingHereString(15))
+        wdsOutput = wdsExtractor.getSmallerWdsInterestingHereString(15)
+        self.text.set_text(wdsOutput)
+        with open("WDS_Output.txt", "w") as text_file:
+            text_file.write(wdsOutput)
+
         
         
     def delete_event(self, widget, event, data=None):

@@ -27,6 +27,20 @@ class WDSGUI:
             Sets the text buffer to the constrained wds after it is finished. 
             This is a callback function for the "Contrain" button. 
         '''
+
+        ## Load preferences from file
+
+        # Have some default preferences
+        preferences = {'latitude': '34:00:00.0', '+dec': '35:00:00.0'}
+        # Try to open the saved preferences (should work)
+        with open('WDS_Preferences.json', 'r') as fp:
+            preferences = json.load(fp)
+        print("Preferences")
+        print("Latitude:", preferences['latitude'], 
+                " +dec:", preferences['+dec'],
+                " -dec:", preferences['-dec'])
+        
+
         
         # Get the inputs from the user entry fields 
         # Time constraints
@@ -65,38 +79,30 @@ class WDSGUI:
          
         # Location (dec) constraints
         
+        # Shale 2017-02-08: Changed from taking GUI input here to preferences
         # Check if the input format is colon-separated 
-        if ":" in self.latitudeInput.get_text():
+        if ":" in preferences['latitude']:
             # split the string at the colons
-            decmmss = self.latitudeInput.get_text().split(":")
+            decmmss = preferences['latitude'].split(":")
             # and convert each of the resulting numbers to a float
             decmmss = [float(i) for i in decmmss]
             # Then merge them back together as a single decmmss float
             latitudeInput = decmmss[0]*10000 + decmmss[1]*100 + decmmss[2]
         else:
-            latitudeInput = float(self.latitudeInput.get_text())
+            latitudeInput = float(preferences['latitude'])
         
+        # Shale 2017-02-08: Changed from taking GUI input here to preferences
+        # TODO Make asymmetric dec width
         # Check if the input format is colon-separated 
-        if ":" in self.decWidthInput.get_text():
+        if ":" in preferences['+dec']:
             # split the string at the colons
-            decmmss = self.decWidthInput.get_text().split(":")
+            decmmss = preferences['+dec'].split(":")
             # and convert each of the resulting numbers to a float
             decmmss = [float(i) for i in decmmss]
             # Then merge them back together as a single decmmss float
             decWidthInput = decmmss[0]*10000 + decmmss[1]*100 + decmmss[2]
         else:
-            decWidthInput = float(self.decWidthInput.get_text())
-        
-        ########### PREFERENCES
-        # Have some default preferences
-        preferences = {}
-        # Try to open the saved preferences (should work)
-        with open('WDS_Preferences.json', 'r') as fp:
-            preferences = json.load(fp)
-        print("Preferences")
-        print("Latitude:", preferences['latitude'], 
-                " +dec:", preferences['+dec'],
-                " -dec:", preferences['-dec'])
+            decWidthInput = float(preferences['+dec'])
         
         # star contraints
         separationInput = (float(self.upperSeparationInput.get_text()), float(self.lowerSeparationInput.get_text()))

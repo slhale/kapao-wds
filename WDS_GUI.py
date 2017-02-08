@@ -35,11 +35,6 @@ class WDSGUI:
         # Try to open the saved preferences (should work)
         with open('WDS_Preferences.json', 'r') as fp:
             preferences = json.load(fp)
-        print("Preferences")
-        print("Latitude:", preferences['latitude'], 
-                " +dec:", preferences['+dec'],
-                " -dec:", preferences['-dec'])
-        
 
         
         # Get the inputs from the user entry fields 
@@ -201,42 +196,29 @@ class WDSGUI:
         
         ### Now let's put things into the table
         
-        ######## LOCATION CONSTRAINTS
+        ######## PREFERENCES DISPLAY
         
-        # Make title for location constraints section 
-        self.locationConstrainLabel = gtk.Label("Location constraints:  (deg:min:sec)")
+        # Make title for preferencs section
+        self.preferencesLabel = gtk.Label("Preferences")
         
         # Attach it to the top row of the table
-        self.inputsTable.attach(self.locationConstrainLabel, left_attach=4, right_attach=6, top_attach=0, bottom_attach=1)
-        self.locationConstrainLabel.show()
+        self.inputsTable.attach(self.preferencesLabel, left_attach=4, right_attach=6, top_attach=0, bottom_attach=1)
+        self.preferencesLabel.show()
         
-        
-        # Make subtitles for the start and stop hour angle fields
-        self.latitudeLabel = gtk.Label("Local latitude ")
-        self.decWidthLabel = gtk.Label("Dec view range ")
-        
-        # Attach them to the 2nd row of the table
-        self.inputsTable.attach(self.latitudeLabel, left_attach=4, right_attach=5, top_attach=1, bottom_attach=2)
-        self.latitudeLabel.show()
-        self.inputsTable.attach(self.decWidthLabel, left_attach=5, right_attach=6, top_attach=1, bottom_attach=2)
-        self.decWidthLabel.show()
-        
-        
-        # Make time input fields for the user 
-        # They start out with default values 
-        self.latitudeInput = gtk.Entry()
-        self.latitudeInput.set_text("34:00:00.0")
-        self.decWidthInput = gtk.Entry()
-        self.decWidthInput.set_text("35:00:00.0")
-        
-        # Set the width of the entry fields 
-        #self.startHAInput.set_width_chars(8)
-        
-        # Attach them to the 3rd row of the table
-        self.inputsTable.attach(self.latitudeInput, left_attach=4, right_attach=5, top_attach=2, bottom_attach=3)
-        self.latitudeInput.show()
-        self.inputsTable.attach(self.decWidthInput, left_attach=5, right_attach=6, top_attach=2, bottom_attach=3)
-        self.decWidthInput.show()
+        # Create a string with all the current preferences
+        # Try to open the saved preferences (should work)
+        preferences = {}
+        with open('WDS_Preferences.json', 'r') as fp:
+            preferences = json.load(fp)
+        prefString = ''
+        for key in preferences.keys():
+            prefString += key + ': ' + preferences[key] + '\n'
+
+        # Write the preferences to a label to indicate they cannot be changed in the GUI
+        self.prefStringLabel = gtk.Label(prefString)
+        # Attach it to the remaining space
+        self.inputsTable.attach(self.prefStringLabel, left_attach=4, right_attach=6, top_attach=1, bottom_attach=3)
+        self.prefStringLabel.show()
         
         
         ######## TIME CONSTRAINTS

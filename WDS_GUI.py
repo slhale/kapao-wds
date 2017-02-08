@@ -60,15 +60,16 @@ class WDSGUI:
         else:
             startTimeInput = float(self.startTimeInput.get_text())
 
-        if ":" in preferences['+HA']:
+        eastHAKey = '-HA' # TODO check this is right
+        if ":" in preferences[eastHAKey]:
             # split the string at the colons
-            hhmmss = preferences['+HA'].split(":")
+            hhmmss = preferences[eastHAKey].split(":")
             # and convert each of the resulting numbers to a float
             hhmmss = [float(i) for i in hhmmss]
             # Then merge them back together as a single hhmmss float
             eastHARange = hhmmss[0]*10000 + hhmmss[1]*100 + hhmmss[2]
         else:
-            eastHARange = float(preferences['+HA'])
+            eastHARange = float(preferences[eastHAKey])
 
         startHAInput = startTimeInput - eastHARange
         
@@ -83,15 +84,16 @@ class WDSGUI:
         else:
             stopTimeInput = float(self.stopTimeInput.get_text())
        
-        if ":" in preferences['-HA']:
+        westHAKey = '+HA' # TODO check this is right
+        if ":" in preferences[westHAKey]:
             # split the string at the colons
-            hhmmss = preferences['-HA'].split(":")
+            hhmmss = preferences[westHAKey].split(":")
             # and convert each of the resulting numbers to a float
             hhmmss = [float(i) for i in hhmmss]
             # Then merge them back together as a single hhmmss float
             westHARange = hhmmss[0]*10000 + hhmmss[1]*100 + hhmmss[2]
         else:
-            westHARange = float(preferences['-HA'])
+            westHARange = float(preferences[westHAKey])
 
         stopHAInput = stopTimeInput + westHARange
          

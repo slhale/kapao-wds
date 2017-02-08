@@ -14,6 +14,7 @@ import gtk
 import pango
 from astropy.time import Time
 import WDS_Extraction_Tool as wdsExtractor
+import json
 
 class WDSGUI:
     
@@ -86,6 +87,16 @@ class WDSGUI:
         else:
             decWidthInput = float(self.decWidthInput.get_text())
         
+        ########### PREFERENCES
+        # Have some default preferences
+        preferences = {}
+        # Try to open the saved preferences (should work)
+        with open('WDS_Preferences.json', 'r') as fp:
+            preferences = json.load(fp)
+        print("Preferences")
+        print("Latitude:", preferences['latitude'], 
+                " +dec:", preferences['+dec'],
+                " -dec:", preferences['-dec'])
         
         # star contraints
         separationInput = (float(self.upperSeparationInput.get_text()), float(self.lowerSeparationInput.get_text()))
@@ -148,6 +159,7 @@ class WDSGUI:
         # Make the window visible
         self.window.show()
         
+
         
         ########### HBOX
         ##### Highest level box

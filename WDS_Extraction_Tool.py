@@ -131,7 +131,34 @@ def getWdsMaster():
     global wdsMaster
     return wdsMaster
 
-def tableToString(table, colWidth = 20):
+def floatStringToColonSeparated(coordinate):
+    # Check for + or - for Dec, and save so can add back later
+    leadingSign = ''
+    if '-' in coordinate:
+        leadingSign = '-'
+    elif '+' in coordinate:
+        leadingSign = '+'
+
+    data = float(coordinate)
+    # Split the float into hh, mm, and ss
+    # Casting all of the splits into int before string so there are no
+    #  trailing decimal points
+    seconds = str(int(data % 100))
+    minutes = str(int((data % 10000 - data % 100) / 100))
+    hours = str(int((data % 1000000 - data % 10000) / 10000))
+
+    # Make sure there are leading zeros when one of them is <10
+    if len(seconds) < 2:
+        seconds = '0' + seconds
+    if len(minutes) < 2:
+        minutes = '0' + minutes
+    if len(hours) < 2:
+        hours = '0' + hours
+
+    # Concat them together with colons and return
+    return leadingSign + hours + ':' + minutes + ':' + seconds
+
+def tableToString(table, colWidth = 20, colonSeparated = True):
     '''
         Takes an astropy table and converts the table to a string.
         Also optionally takes the width of the column colWidth in 
@@ -170,6 +197,9 @@ def tableToString(table, colWidth = 20):
             # Remove the first and last characters from the string because 
             # they are just brackets 
             data = data[1:-1]
+            # If this is RA or Dec want to convert from hhmmss.s to hh:mm:ss.s
+            if colonSeparated and (colName == 'RA' or colName == 'Dec'):
+                data = floatStringToColonSeparated(data)
             rowstring = rowstring + (colWidth - lastWordLen)*' ' + data
             lastWordLen = len(data)
         # Then add that string as a new line to the full table's string 
@@ -178,7 +208,7 @@ def tableToString(table, colWidth = 20):
     return string
 
 # Added by shale 2017-01-30: Same default colWidth as tableToString, but changeable
-def getSmallerWdsInterestingHereString(colWidth = 20):
+def getSmallerWdsInterestingHereString(colWidth = 20, colonSeparated = True):
     '''
         Gets a string of the  WDS table constrained to what stars 
         are both interesting and viewable. Returns only the columns with 
@@ -192,7 +222,7 @@ def getSmallerWdsInterestingHereString(colWidth = 20):
     #                   Also reordering list.
     return tableToString(wdsInterestingHere[discovererAndNumber, raCoors, decCoors,
                                     priMag, secMag, sepFirst, sepLast, spectralType],
-                                    colWidth) # Added by shale on 2017-01-30
+                                    colWidth, colonSeparated) # Added by shale on 2017-01-30
 
 
 def calcDeltaMags():
@@ -272,9 +302,9 @@ def setTimeConstraints(startHA=190000.0, stopHA=240000.0, date=Time.now()):
     '''
     global constraints
     
-    siderealAdjust = calcSiderealAdjustment(time = date)     
+    siderealAdjust = calcSiderealAdjustment(time = date) # TODO check github
 
-    startRA = startHA + siderealAdjust
+    startRA = startHA + siderealAdjust # TODO check math
     stopRA = stopHA + siderealAdjust
     
     # Account for the 24 hour clock, and roll over if we pass midnight on either

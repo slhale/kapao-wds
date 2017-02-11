@@ -2,9 +2,9 @@
 ### Extraction tool for the Washington Double Star (WDS) Catalog
 
 This tool requires:
- * NumPy
- * Astropy
- * PyGTK
+ * [NumPy](https://github.com/numpy/numpy)
+ * [Astropy](https://github.com/astropy/astropy)
+ * [PyGTK](https://github.com/GNOME/pygtk)
 
 These should be able to be installed easily on Lunix/Unix with your typical package manager.
 Macs may have some troble with PyGTK. For more detailed dependancy installation instructions, see https://docs.google.com/document/d/1PLanSCL6TMRRJTipLeM3rZKFpSoFwu9hFaUDStEbvcs/edit?usp=sharing

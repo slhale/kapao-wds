@@ -14,6 +14,8 @@ To run the GUI, these files are required to be in the same folder:
  * WDS_Extraction_Tool.py
  * WDS_GUI.py
  
+Download or clone them from here. 
+ 
 Run 
 ```
 python WDS_GUI.py

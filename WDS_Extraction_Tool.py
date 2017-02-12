@@ -153,6 +153,68 @@ def getWdsMaster():
     global wdsMaster
     return wdsMaster
 
+def hhmmssAdd(first, second):
+    '''
+        Function for adding hhmmss.s
+        This is necissary because the number rolls over at 60, not 100.
+    '''
+
+    # Split up the two inputs into hh, mm, and ss
+    ss1 = first % 100
+    mm1 = (first % 10000 - first % 100) / 100
+    hh1 = (first % 1000000 - first % 10000) / 10000
+    ss2 = second % 100
+    mm2 = (second % 10000 - second % 100) / 100
+    hh2 = (second % 1000000 - second % 10000) / 10000
+
+    # Add from least to most significant digits, taking care of rollover.
+    ss = ss1 + ss2
+    mm = mm1 + mm2
+    hh = hh1 + hh2
+    if ss > 60:
+        mm = mm + 1
+        ss = ss - 60
+    if mm > 60:
+        hh = hh + 1
+        mm = mm - 60
+
+    # Merge the hhmmss back together
+    mm = mm * 100
+    hh = hh * 10000
+    return hh + mm + ss
+
+def hhmmssSubtract(first, second):
+    '''
+        Function for subtracting hhmmss.s
+        Second is subtracted from first, first - second.
+        This is necissary because the number rolls over at 60, not 100.
+    '''
+
+    # Split up the two inputs into hh, mm, and ss
+    ss1 = first % 100
+    mm1 = (first % 10000 - first % 100) / 100
+    hh1 = (first % 1000000 - first % 10000) / 10000
+    ss2 = second % 100
+    mm2 = (second % 10000 - second % 100) / 100
+    hh2 = (second % 1000000 - second % 10000) / 10000
+
+    # Subtract, taking care of rollover.
+    ss = ss1 - ss2
+    mm = mm1 - mm2
+    hh = hh1 - hh2
+    if ss < 0:
+        mm = mm - 1
+        ss = ss + 60
+    if mm < 0:
+        hh = hh - 1
+        mm = mm + 60
+
+    # Merge the hhmmss back together
+    mm = mm * 100
+    hh = hh * 10000
+    return hh + mm + ss
+
+
 def floatStringToColonSeparated(coordinate):
     # Check for + or - for Dec, and save so can add back later
     leadingSign = ''
@@ -327,8 +389,10 @@ def setTimeConstraints(startHA=190000.0, stopHA=240000.0, date=Time.now()):
     
     siderealAdjust = calcSiderealAdjustment(time = date) # TODO check github
 
-    startRA = startHA + siderealAdjust # TODO check math
-    stopRA = stopHA + siderealAdjust
+    #startRA = startHA + siderealAdjust # TODO check math
+    #stopRA = stopHA + siderealAdjust
+    startRA = hhmmssAdd(startHA, siderealAdjust) # TODO check math
+    stopRA = hhmmssAdd(stopHA, siderealAdjust)
     
     # Account for the 24 hour clock, and roll over if we pass midnight on either
     if startRA > 240000.0:

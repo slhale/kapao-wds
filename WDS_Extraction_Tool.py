@@ -26,13 +26,17 @@ import re
 # This funtion needs to be up here so it can be called during 'setup'
 def formatWds(wds):
     '''
-        Converts the combined RADec column of the WDS master table to 
-        two separate columns of RA and Dec. 
-        Takes the WDS table and returns a modified version of it. 
+        Takes the WDS table and returns a modified version of it.
+         - Converts the combined RADec column of the WDS master table to
+           two separate columns of RA and Dec.
+         - Creates a new column of delta mag from primary and secondary mags
     '''
     
     radec = wds['col21']
+    primag = wds['col11']
+    secmag = wds['col12']
     
+    # Separate out RA and Dec from existing column and put into two lists
     ra = []
     dec = []
     split = ''
@@ -51,12 +55,29 @@ def formatWds(wds):
         else:
             ra.append(-999999.9)
             dec.append(-999999.9)
+
+    # Create list of delta mags from primary and secondary mags
+    deltamag = []
+    if len(primag) == len(secmag):
+        for i  in range(0, len(primag)):
+            # Take the difference such that it is positive
+            # Assuming that secmag > primag
+            if secmag[i] and primag[i]:
+                delta = float(secmag[i]) - float(primag[i])
+                # Round the output so the table doesn't get messed up
+                delta = round(delta, 2)
+                deltamag.append(delta)
+            else:
+                deltamag.append(-99.9)
+
     
-    # Add the new lists as two new columns to the wds table
+    # Add the new lists as new columns to the wds table
     raCol = astropy.table.Column(data=ra, name='RA')
     decCol = astropy.table.Column(data=dec, name='Dec')
+    deltaMagCol = astropy.table.Column(data=deltamag, name='DeltaMag')
     wds.add_column(raCol)
     wds.add_column(decCol)
+    wds.add_column(deltaMagCol)
     
     return wds
 
@@ -88,6 +109,7 @@ priRaProperMotion = 'PriRAPropMotion'
 priDecProperMotion = 'PriDecPropMotion'
 raCoors = 'RA'
 decCoors = 'Dec'
+deltaMag = 'DeltaMag'
 
 ## Rename all the columns to the useful names
 wdsMaster['col2'].name = discovererAndNumber
@@ -143,12 +165,13 @@ def floatStringToColonSeparated(coordinate):
     # Split the float into hh, mm, and ss
     # Casting all of the splits into int before string so there are no
     #  trailing decimal points
-    seconds = str(int(data % 100))
+    #  Except seconds are rounded to 2 decimal points
+    seconds = str(round(data % 100, 2))
     minutes = str(int((data % 10000 - data % 100) / 100))
     hours = str(int((data % 1000000 - data % 10000) / 10000))
 
     # Make sure there are leading zeros when one of them is <10
-    if len(seconds) < 2:
+    if len(seconds.partition('.')[0]) < 2:
         seconds = '0' + seconds
     if len(minutes) < 2:
         minutes = '0' + minutes
@@ -221,7 +244,7 @@ def getSmallerWdsInterestingHereString(colWidth = 20, colonSeparated = True):
     # Shale 2017-02-06: Removing the position angles and proper motions.
     #                   Also reordering list.
     return tableToString(wdsInterestingHere[discovererAndNumber, raCoors, decCoors,
-                                    priMag, secMag, sepFirst, sepLast, spectralType],
+                                    priMag, deltaMag, sepFirst, sepLast, spectralType],
                                     colWidth, colonSeparated) # Added by shale on 2017-01-30
 
 

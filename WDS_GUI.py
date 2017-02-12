@@ -17,6 +17,37 @@ import WDS_Extraction_Tool as wdsExtractor
 import json
 
 class WDSGUI:
+
+    # TODO This probably shouldn't be a class function
+    # This function is used for processing the user input for the
+    #  start and stop observing times.
+    def timeInputProcessing(self, time):
+        # Check if the input format is colon-separated 
+        if ":" in time:
+            # Check if there is one colon or two:
+            #  - One colon is assumed to be hh:mm
+            #  - Two colons is assumed to be hh:mm:ss.s
+            if time.count(':') == 1:
+                # split the string at the colons
+                hhmm = time.split(":")
+                # and convert each of the resulting numbers to a float
+                hhmm = [float(i) for i in hhmm]
+                # Then merge them back together as a single hhmmss float
+                time = hhmm[0]*10000 + hhmm[1]*100
+            else:
+                # split the string at the colons
+                hhmmss = time.split(":")
+                # and convert each of the resulting numbers to a float
+                hhmmss = [float(i) for i in hhmmss]
+                # Then merge them back together as a single hhmmss float
+                time = hhmmss[0]*10000 + hhmmss[1]*100 + hhmmss[2]
+        else:
+            # If it's just an hour multiply by 10000
+            time = float(time)
+            if time == time % 100:
+                time = time * 10000
+            # If it's non-colon-separated hhmmss.s leave it as-is
+        return time
     
     def constrain(self, widget, data=None):
         '''
@@ -49,18 +80,13 @@ class WDSGUI:
         
         # Hour Angle start and stop
         
-        # Check if the input format is colon-separated 
-        if ":" in self.startTimeInput.get_text():
-            # split the string at the colons
-            hhmmss = self.startTimeInput.get_text().split(":")
-            # and convert each of the resulting numbers to a float
-            hhmmss = [float(i) for i in hhmmss]
-            # Then merge them back together as a single hhmmss float
-            startTimeInput = hhmmss[0]*10000 + hhmmss[1]*100 + hhmmss[2]
-        else:
-            startTimeInput = float(self.startTimeInput.get_text())
+        # Three possible types of input we need to consider:
+        #  - Regular hh:mm:ss.s
+        #  - No seconds, hh:mm
+        #  - Just the hour, hh
+        #  - (hhmmss.s with no colons is possible too)
 
-        eastHAKey = '-HA' # TODO check this is right
+        eastHAKey = 'eastHA' # TODO check this is right
         if ":" in preferences[eastHAKey]:
             # split the string at the colons
             hhmmss = preferences[eastHAKey].split(":")
@@ -71,20 +97,11 @@ class WDSGUI:
         else:
             eastHARange = float(preferences[eastHAKey])
 
-        startHAInput = startTimeInput - eastHARange
+        startTimeInput = self.timeInputProcessing(self.startTimeInput.get_text())
+        startHAInput = startTimeInput - eastHARange # TODO fix hhmmss arithmetic
         
-        # Check if the input format is colon-separated 
-        if ":" in self.stopTimeInput.get_text():
-            # split the string at the colons
-            hhmmss = self.stopTimeInput.get_text().split(":")
-            # and convert each of the resulting numbers to a float
-            hhmmss = [float(i) for i in hhmmss]
-            # Then merge them back together as a single hhmmss float
-            stopTimeInput  = hhmmss[0]*10000 + hhmmss[1]*100 + hhmmss[2]
-        else:
-            stopTimeInput = float(self.stopTimeInput.get_text())
        
-        westHAKey = '+HA' # TODO check this is right
+        westHAKey = 'westHA' # TODO check this is right
         if ":" in preferences[westHAKey]:
             # split the string at the colons
             hhmmss = preferences[westHAKey].split(":")
@@ -95,6 +112,7 @@ class WDSGUI:
         else:
             westHARange = float(preferences[westHAKey])
 
+        stopTimeInput = self.timeInputProcessing(self.stopTimeInput.get_text())
         stopHAInput = stopTimeInput + westHARange
          
         # Location (dec) constraints
@@ -185,7 +203,10 @@ class WDSGUI:
         
         # Make the window always be centered 
         self.window.set_position(gtk.WIN_POS_CENTER_ALWAYS)
-        
+
+        # Make a default size for the window so you can see the text
+        self.window.set_default_size(800, 1000)
+
         # Make the window visible
         self.window.show()
         
@@ -253,7 +274,7 @@ class WDSGUI:
         ######## TIME CONSTRAINTS
         
         # Make title for time constraints section 
-        self.timeConstrainLabel = gtk.Label("Time constraints:  (hour:min:sec)")
+        self.timeConstrainLabel = gtk.Label("Time constraints:  (Local Solar Time, military)")
         
         # Attach it to the top row of the table
         self.inputsTable.attach(self.timeConstrainLabel, left_attach=0, right_attach=3, top_attach=0, bottom_attach=1)
@@ -381,7 +402,8 @@ class WDSGUI:
         # Make a text buffer, which contains the actual text to 
         # go into the text view
         self.text = gtk.TextBuffer()
-        self.text.set_text("")
+        starterText = "    \n" * 5
+        self.text.set_text(starterText)
         
         ############# TEXTVIEW
         ####### Displays the produced WDS table

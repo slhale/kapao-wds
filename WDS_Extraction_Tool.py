@@ -441,6 +441,10 @@ def constrain():
     global wdsInteresting
     global wdsInterestingHere
     global constraints
+
+    # Print what we are constraining with so it seems a bit responsive before the long processing
+    print("Constraining WDS with:")
+    print(constraints)
     
     # Reset what wdsInteresting and wdsInterestingHere are so that we 
     # can get stars which we previously constrained out 

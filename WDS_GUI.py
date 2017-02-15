@@ -162,6 +162,12 @@ class WDSGUI:
         with open("WDS_Output.txt", "w") as text_file:
             text_file.write(wdsOutput)
 
+        # Determine the number of results
+        nlines = wdsOutput.count('\n')
+        numResults = nlines - 1
+        resultString = str(numResults) + " Results"
+        self.resultsNumLabel.set_text(resultString)
+
         
         
     def delete_event(self, widget, event, data=None):
@@ -395,6 +401,14 @@ class WDSGUI:
         # function constrain() passing it None as its argument.
         self.constrainButton.connect("clicked", self.constrain, None)
         
+        ######## NUMBER OF RESULTS
+
+        # Make title for number of results
+        self.resultsNumLabel = gtk.Label("0 Results")
+
+        # Attach it to the 7th row of the table, to the right of the constrain button
+        self.inputsTable.attach(self.resultsNumLabel, left_attach=1, right_attach=2, top_attach=6, bottom_attach=7)
+        self.resultsNumLabel.show()
         
         ############# TEXTBUFFER
         ####### Contains the actual text for the WDS table 

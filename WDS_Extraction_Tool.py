@@ -21,7 +21,9 @@ np.set_printoptions(threshold='nan')
 from collections import Counter 
 from astropy import units as u
 from astropy.time import Time
+from astropy.coordinates import SkyCoord, EarthLocation, AltAz
 import re
+import json
 
 # This funtion needs to be up here so it can be called during 'setup'
 def formatWds(wds):
@@ -214,6 +216,37 @@ def hhmmssSubtract(first, second):
     hh = hh * 10000
     return hh + mm + ss
 
+
+def ddmmssToDeg(coordinate):
+    # Check for + or - for Dec, and save so can add back later
+    leadingSign = ''
+    if '-' in str(coordinate):
+        leadingSign = '-'
+    elif '+' in str(coordinate):
+        leadingSign = '+'
+
+    data = float(coordinate)
+    # Split the float into hh, mm, and ss
+    # Casting all of the splits into int before string so there are no
+    #  trailing decimal points
+    #  Except seconds are rounded to 2 decimal points
+    seconds = data % 100
+    minutes = (data % 10000 - data % 100) / 100
+    degrees = (data % 1000000 - data % 10000) / 10000
+
+    # Divide through from mmss to decimal
+    minutes = minutes / 60.0
+    seconds = seconds / 3600.0
+    degrees = float(leadingSign + str(degrees))
+    
+    degrees = degrees + minutes + seconds
+    # TODO this isn't the best fix. Why are some of the lats out of range?
+    if degrees < -90.0:
+        degrees = -90.0
+    elif degrees > 90.0:
+        degrees = 90.0
+
+    return degrees
 
 def floatStringToColonSeparated(coordinate):
     # Check for + or - for Dec, and save so can add back later
@@ -422,12 +455,54 @@ def setLocationConstraints(latitude=340000.0, viewWidth=350000.0):#northDec=(340
     # Using JPL's latitude, 34.2 deg = 34 deg
     northDec = latitude + viewWidth
     southDec = latitude - viewWidth
+
+    # Check rollover for dec constraints
+    if northDec > 900000:
+        northDec = 900000
+    if southDec < -900000:
+        southDec = -900000
     
     # the north dec is the "upper bound", so it's first in the tuple
     constraints['dec'] = (northDec, southDec)
 
 
-def constrain():
+def addAirmassCol():
+    '''
+        Add a columns to the WDS table which is the calculated airmass for
+        each object based off of its RA Dec and the location and time of
+        the constrain.
+    '''
+    # Currently does NOT work! TODO
+    # There is an astropy issue https://github.com/astropy/astropy/issues/5726
+    # which will be fixed in astropy v1.3.1, but as of 2017-02-15 only
+    # version 1.3(.0) has been released.
+    
+    secz = []
+    # Loop over all the radec angles
+    for i  in range(0, len(wdsInteresting[raCoors])):
+        # Create a SkyCoord object from the RA and Dec
+        #ra = floatStringToColonSeparated(wdsInteresting[raCoors][i])
+        #dec = floatStringToColonSeparated(wdsInteresting[decCoors][i])
+        ra = ddmmssToDeg(wdsInteresting[raCoors][i])
+        dec = ddmmssToDeg(wdsInteresting[decCoors][i])
+        starPos = SkyCoord(ra, dec, unit=(u.hour, u.deg))
+
+        # Create an AltAz frame object
+        preferences = {}
+        with open('WDS_Preferences.json', 'r') as fp:
+            preferences = json.load(fp)        
+        observing_location = EarthLocation(lat=preferences['latitude'], lon=preferences['longitude'])
+        aa = AltAz(location=observing_location)#, obstime=observing_time)
+        
+    
+    # Add the list as new column to the wds table
+    raCol = astropy.table.Column(data=ra, name='RA')
+    wds.add_column(deltaMagCol)
+    
+    return wds
+
+
+def constrain(airmass = False):
     '''
         Limits the WDS table to only stars that match our criteria.
         Creates wdsInteresting and wdsInterestingHere tables which 
@@ -442,7 +517,8 @@ def constrain():
     global wdsInterestingHere
     global constraints
 
-    # Print what we are constraining with so it seems a bit responsive before the long processing
+    # Print what we are constraining with so it seems a bit responsive before
+    # the long processing
     print("Constraining WDS with:")
     print(constraints)
     
@@ -450,6 +526,11 @@ def constrain():
     # can get stars which we previously constrained out 
     wdsInteresting = wdsMaster
     wdsInterestingHere = wdsMaster
+
+    # If we are told to do so, make an airmass column for the table
+    #if airmass:
+        #addAirmassCol()
+    # TODO add this back in after associated astropy 1.3.1 has been released
     
     # Make a dictionary of limits (just for compactness).
     # Contains the boolean expressions with witch the wds table 

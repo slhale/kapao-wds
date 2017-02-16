@@ -38,9 +38,9 @@ the GUI is run.
 
 This GitHub repo is already cloned on the Mac on TMO Observer's `~/Applications/WDS_GUI/`.
 
-PyGTK is only installed on the default Python installation, not Anaconda, so to run the GUI, do 
+PyGTK is only installed on the default Python installation (not Anaconda) so to run the GUI, do 
 ```
-/usr/bin/.python WDS_GUI.py
+/usr/bin/python WDS_GUI.py
 ```
 
 To update the program, run 
@@ -48,5 +48,6 @@ To update the program, run
 git pull
 ```
 inside `~/Applicaitons/WDS_GUI/`, but make sure that the latest version here is stable.
+Pulling is probably only reccomended if you know how to deal with any possible merge conflicts.
 If this pull breaks the program, I am probably currently working on the code. Contact me.
 

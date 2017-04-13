@@ -487,11 +487,6 @@ def addAirmassCol():
         each object based off of its RA Dec and the location and time of
         the constrain.
     '''
-    # Currently does NOT work! TODO
-    # There is an astropy issue https://github.com/astropy/astropy/issues/5726
-    # which will be fixed in astropy v1.3.1, but as of 2017-02-15 only
-    # version 1.3(.0) has been released.
-    # Just got 1.3.2 as of 2017-04-13
     global observing_date
 
     # These calculations may take some time depending on how long the catalog is,
@@ -595,7 +590,6 @@ def constrain(airmass = False):
     # If we are told to do so, make an airmass column for the table
     if airmass:
         addAirmassCol()
-    # TODO add this back in after associated astropy 1.3.1 has been released
     
 
 def sortWdsInterestingHere(colName=raCoors):

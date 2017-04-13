@@ -32,3 +32,22 @@ There are preferences which depends on the telescope which are located in
 This includes telescope latitude, and its viewing range in Dec and HA.
 These preferences can be changed in the file, and will be update the next time
 the GUI is run.
+
+
+### Pomona Specific Instructions (as of 2017-02-16)
+
+This GitHub repo is already cloned on the Mac on TMO Observer's `~/Applications/WDS_GUI/`.
+
+PyGTK is only installed on the default Python installation (not Anaconda) so to run the GUI, do 
+```
+/usr/bin/python WDS_GUI.py
+```
+
+To update the program, run 
+```
+git pull
+```
+inside `~/Applicaitons/WDS_GUI/`, but make sure that the latest version here is stable.
+Pulling is probably only reccomended if you know how to deal with any possible merge conflicts.
+If this pull breaks the program, I am probably currently working on the code. Contact me.
+

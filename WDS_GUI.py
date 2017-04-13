@@ -211,7 +211,7 @@ class WDSGUI:
         self.window.set_position(gtk.WIN_POS_CENTER_ALWAYS)
 
         # Make a default size for the window so you can see the text
-        self.window.set_default_size(800, 1000)
+        self.window.set_default_size(600, 800)
 
         # Make the window visible
         self.window.show()
@@ -301,9 +301,9 @@ class WDSGUI:
         # Make time input fields for the user 
         # They start out with default values 
         self.startTimeInput = gtk.Entry()
-        self.startTimeInput.set_text("18:00:00.0")
+        self.startTimeInput.set_text("18:00")
         self.stopTimeInput = gtk.Entry()
-        self.stopTimeInput.set_text("24:00:00.0")
+        self.stopTimeInput.set_text("24:00")
         
         # Set the width of the entry fields 
         self.startTimeInput.set_width_chars(8)

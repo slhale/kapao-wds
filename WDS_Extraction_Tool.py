@@ -24,6 +24,12 @@ from astropy.time import Time
 from astropy.coordinates import SkyCoord, EarthLocation, AltAz
 import re
 import json
+progressInstalled = True
+try:
+    from progress.bar import Bar
+except ImportError:
+    print("Install 'progress' for helpful loading bars!")
+    progressInstalled = False
 
 # This funtion needs to be up here so it can be called during 'setup'
 def formatWds(wds):
@@ -476,6 +482,10 @@ def addAirmassCol():
     # There is an astropy issue https://github.com/astropy/astropy/issues/5726
     # which will be fixed in astropy v1.3.1, but as of 2017-02-15 only
     # version 1.3(.0) has been released.
+    # Just got 1.3.2 as of 2017-04-13
+
+    if progressInstalled:
+        progressBar = Bar('Calculating airmasses', max=len(wdsInteresting[raCoors]))
     
     secz = []
     # Loop over all the radec angles
@@ -493,11 +503,16 @@ def addAirmassCol():
             preferences = json.load(fp)        
         observing_location = EarthLocation(lat=preferences['latitude'], lon=preferences['longitude'])
         aa = AltAz(location=observing_location)#, obstime=observing_time)
-        
+
+        if progressInstalled:
+            progressBar.next()
     
     # Add the list as new column to the wds table
     raCol = astropy.table.Column(data=ra, name='RA')
     wds.add_column(deltaMagCol)
+
+    if progressInstalled:
+        progressBar.finish()
     
     return wds
 
@@ -527,11 +542,6 @@ def constrain(airmass = False):
     wdsInteresting = wdsMaster
     wdsInterestingHere = wdsMaster
 
-    # If we are told to do so, make an airmass column for the table
-    #if airmass:
-        #addAirmassCol()
-    # TODO add this back in after associated astropy 1.3.1 has been released
-    
     # Make a dictionary of limits (just for compactness).
     # Contains the boolean expressions with witch the wds table 
     # will be compared to. 
@@ -568,6 +578,11 @@ def constrain(airmass = False):
     # Apply the limits to the catalog
     wdsInteresting = wdsInteresting[np.argwhere(generalLimits)]
     wdsInterestingHere = wdsInterestingHere[np.argwhere(hereLimits)]
+
+    # If we are told to do so, make an airmass column for the table
+    if airmass:
+        addAirmassCol()
+    # TODO add this back in after associated astropy 1.3.1 has been released
     
 
 def sortWdsInterestingHere(colName=raCoors):

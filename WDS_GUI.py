@@ -70,12 +70,14 @@ class WDSGUI:
         
         # Get the inputs from the user entry fields 
         # Time constraints
+
         
         # Date
         # the format of rawDate is a tuple, (year, month, day)
         rawDate = self.calendar.get_date()
         # note that for some reason the months go from 0 to 11 rather than 1 to 12
-        dateString = str(rawDate[0]) + '-' + str(rawDate[1]+1) + '-' + str(rawDate[2]) + ' 00:00:00'
+        # use the start observation time in the date for now
+        dateString = str(rawDate[0]) + '-' + str(rawDate[1]+1) + '-' + str(rawDate[2]) + ' ' + self.startTimeInput.get_text()
         astroDateInput = Time(dateString, format='iso', scale='utc')
         
         # Hour Angle start and stop
@@ -151,9 +153,10 @@ class WDSGUI:
         wdsExtractor.setTimeConstraints(startHA=startHAInput, stopHA=stopHAInput, date=astroDateInput)
         wdsExtractor.setLocationConstraints(latitude=latitudeInput, viewWidth=decWidthInput)
         wdsExtractor.setStarConstraints(separation=separationInput, magnitude=magnitudeInput, deltaMag=deltaMagInput)
+        wdsExtractor.setDate(astroDateInput)
         
         # Constrain the wds table
-        wdsExtractor.constrain()
+        wdsExtractor.constrain(airmass=True)
         
         # Display the new wds table
         #self.text.set_text(str(wdsExtractor.getWdsInterestingHere()))

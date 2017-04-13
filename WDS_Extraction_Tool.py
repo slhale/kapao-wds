@@ -137,6 +137,7 @@ wdsMaster['col15'].name = priDecProperMotion
 # Constraints is the actual numbers -- upper and lower bounds for
 # different properties.
 constraints = {}
+observing_date = Time.now()
 
 
 def getWdsInterestingHere():
@@ -342,11 +343,14 @@ def getSmallerWdsInterestingHereString(colWidth = 20, colonSeparated = True):
     global wdsInterestingHere
     
     # Not including numObjs because it doesn't seem to have much in it
-    # Shale 2017-02-06: Removing the position angles and proper motions.
-    #                   Also reordering list.
-    return tableToString(wdsInterestingHere[discovererAndNumber, raCoors, decCoors,
-                                    priMag, deltaMag, sepFirst, sepLast, spectralType],
-                                    colWidth, colonSeparated) # Added by shale on 2017-01-30
+    if 'secz' in wdsInterestingHere.dtype.names:
+        return tableToString(wdsInterestingHere[discovererAndNumber, raCoors, decCoors,
+                                        priMag, deltaMag, sepFirst, sepLast, spectralType, 'secz'],
+                                        colWidth, colonSeparated)
+    else:
+        return tableToString(wdsInterestingHere[discovererAndNumber, raCoors, decCoors,
+                                        priMag, deltaMag, sepFirst, sepLast, spectralType],
+                                        colWidth, colonSeparated)
 
 
 def calcDeltaMags():
@@ -472,6 +476,11 @@ def setLocationConstraints(latitude=340000.0, viewWidth=350000.0):#northDec=(340
     constraints['dec'] = (northDec, southDec)
 
 
+def setDate(date):
+    global observing_date
+    observing_date = date
+
+
 def addAirmassCol():
     '''
         Add a columns to the WDS table which is the calculated airmass for
@@ -483,18 +492,20 @@ def addAirmassCol():
     # which will be fixed in astropy v1.3.1, but as of 2017-02-15 only
     # version 1.3(.0) has been released.
     # Just got 1.3.2 as of 2017-04-13
+    global observing_date
 
+    # These calculations may take some time depending on how long the catalog is,
+    # so make a progress bar if the program imported the progess package
     if progressInstalled:
-        progressBar = Bar('Calculating airmasses', max=len(wdsInteresting[raCoors]))
+        progressBar = Bar('Calculating airmasses', max=len(wdsInterestingHere[raCoors]))
+    print("Airmass calculated with date ", observing_date)
     
     secz = []
     # Loop over all the radec angles
-    for i  in range(0, len(wdsInteresting[raCoors])):
+    for i  in range(0, len(wdsInterestingHere[raCoors])):
         # Create a SkyCoord object from the RA and Dec
-        #ra = floatStringToColonSeparated(wdsInteresting[raCoors][i])
-        #dec = floatStringToColonSeparated(wdsInteresting[decCoors][i])
-        ra = ddmmssToDeg(wdsInteresting[raCoors][i])
-        dec = ddmmssToDeg(wdsInteresting[decCoors][i])
+        ra = ddmmssToDeg(wdsInterestingHere[raCoors][i])
+        dec = ddmmssToDeg(wdsInterestingHere[decCoors][i])
         starPos = SkyCoord(ra, dec, unit=(u.hour, u.deg))
 
         # Create an AltAz frame object
@@ -502,19 +513,22 @@ def addAirmassCol():
         with open('WDS_Preferences.json', 'r') as fp:
             preferences = json.load(fp)        
         observing_location = EarthLocation(lat=preferences['latitude'], lon=preferences['longitude'])
-        aa = AltAz(location=observing_location)#, obstime=observing_time)
+        aa = AltAz(location=observing_location, obstime=observing_date)
+
+        # Calculate airmass
+        secz.append(starPos.transform_to(aa).secz)
 
         if progressInstalled:
             progressBar.next()
     
     # Add the list as new column to the wds table
-    raCol = astropy.table.Column(data=ra, name='RA')
-    wds.add_column(deltaMagCol)
+    seczCol = astropy.table.Column(data=secz, name='secz')
+    wdsInterestingHere.add_column(seczCol)
 
     if progressInstalled:
         progressBar.finish()
     
-    return wds
+    return wdsInterestingHere
 
 
 def constrain(airmass = False):
@@ -534,8 +548,7 @@ def constrain(airmass = False):
 
     # Print what we are constraining with so it seems a bit responsive before
     # the long processing
-    print("Constraining WDS with:")
-    print(constraints)
+    print("Constraining WDS with: ", constraints)
     
     # Reset what wdsInteresting and wdsInterestingHere are so that we 
     # can get stars which we previously constrained out 
